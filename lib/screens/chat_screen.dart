@@ -1,0 +1,148 @@
+import 'package:flutter/material.dart';
+import '../models/contact.dart';
+import '../models/message.dart';
+
+class ChatScreen extends StatefulWidget {
+  final Contact contact;
+
+  const ChatScreen({super.key, required this.contact});
+
+  @override
+  State<ChatScreen> createState() => _ChatScreenState();
+}
+
+class _ChatScreenState extends State<ChatScreen> {
+  final List<Message> messages = [
+    Message(
+      id: '1',
+      senderId: 'user1',
+      text: 'Hello!',
+      timestamp: DateTime.now().subtract(const Duration(minutes: 5)),
+    ),
+    Message(
+      id: '2',
+      senderId: 'me',
+      text: 'Hi there!',
+      timestamp: DateTime.now().subtract(const Duration(minutes: 4)),
+    ),
+    Message(
+      id: '3',
+      senderId: 'user1',
+      text: 'Ennada?',
+      timestamp: DateTime.now().subtract(const Duration(minutes: 3)),
+    ),
+  ];
+
+  final TextEditingController _messageController = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
+
+  void _sendMessage() {
+    if (_messageController.text.trim().isEmpty) return;
+    setState(() {
+      messages.add(Message(
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        senderId: 'me',
+        text: _messageController.text.trim(),
+        timestamp: DateTime.now(),
+      ));
+      _messageController.clear();
+    });
+    _scrollController.animateTo(
+      _scrollController.position.maxScrollExtent,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeOut,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFF0A1021),
+      appBar: AppBar(
+        backgroundColor: const Color(0xFF1C2439),
+        title: Row(
+          children: [
+            CircleAvatar(
+              backgroundImage: AssetImage(widget.contact.avatarUrl),
+              radius: 20,
+            ),
+            const SizedBox(width: 12),
+            Text(
+              widget.contact.name,
+              style: const TextStyle(color: Colors.white, fontSize: 18),
+            ),
+          ],
+        ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+      ),
+      body: Column(
+        children: [
+          Expanded(
+            child: ListView.builder(
+              controller: _scrollController,
+              padding: const EdgeInsets.all(16),
+              itemCount: messages.length,
+              itemBuilder: (context, index) {
+                final message = messages[index];
+                final isMe = message.senderId == 'me';
+                return Align(
+                  alignment:
+                      isMe ? Alignment.centerRight : Alignment.centerLeft,
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(vertical: 4),
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: isMe
+                          ? const Color(0xFF2B5BFF)
+                          : const Color(0xFF1C2439),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Text(
+                      message.text,
+                      style: const TextStyle(color: Colors.white, fontSize: 16),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.all(16),
+            color: const Color(0xFF1C2439),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _messageController,
+                    style: const TextStyle(color: Colors.white),
+                    decoration: InputDecoration(
+                      hintText: 'Type a message...',
+                      hintStyle: const TextStyle(color: Color(0xFF64748B)),
+                      filled: true,
+                      fillColor: const Color(0xFF0A1021),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(20),
+                        borderSide: BorderSide.none,
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 12),
+                    ),
+                    onSubmitted: (_) => _sendMessage(),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                IconButton(
+                  icon: const Icon(Icons.send, color: Color(0xFF2B5BFF)),
+                  onPressed: _sendMessage,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}

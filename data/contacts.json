@@ -1,0 +1,26 @@
+[
+  {
+    "id": "1",
+    "name": "Alice Johnson",
+    "phone": "+1234567890",
+    "email": "alice@example.com",
+    "status": "online",
+    "avatarUrl": "assets/images/avatar1.png",
+    "lastSeen": "2025-10-25T18:00:00.000Z",
+    "messages": [],
+    "unreadCount": 2,
+    "platforms": ["whatsapp"]
+  },
+  {
+    "id": "2",
+    "name": "Bob Smith",
+    "phone": "+1987654321",
+    "email": "bob@example.com",
+    "status": "offline",
+    "avatarUrl": "assets/images/avatar2.png",
+    "lastSeen": "2025-10-25T17:30:00.000Z",
+    "messages": [],
+    "unreadCount": 0,
+    "platforms": ["whatsapp"]
+  }
+]
