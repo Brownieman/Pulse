@@ -167,7 +167,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
         'Building TaskListScreen: loading=$_loading, error=$_error, tasks=${tasks.length}, filtered=${filteredTasks.length}, tab=$selectedTab'); // DEBUG
 
     return Scaffold(
-      backgroundColor: const Color(0xFF0A1021),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(150), // Increased height for tabs
         child: SafeArea(
@@ -182,13 +182,13 @@ class _TaskListScreenState extends State<TaskListScreen> {
                     Text(
                       'Tasks',
                       style: TextStyle(
-                        color: Colors.white,
+                        color: Theme.of(context).colorScheme.onBackground,
                         fontSize: 28,
                         fontWeight: FontWeight.bold,
                         letterSpacing: 1.2,
                         shadows: [
                           Shadow(
-                            color: Colors.blueAccent.withAlpha(179),
+                            color: Theme.of(context).colorScheme.primary.withOpacity(0.7),
                             blurRadius: 12,
                           ),
                         ],
@@ -200,17 +200,17 @@ class _TaskListScreenState extends State<TaskListScreen> {
                       child: Container(
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: const Color(0xFF181A20),
+                          color: Theme.of(context).cardColor,
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.blueAccent.withAlpha(77),
+                              color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
                               blurRadius: 8,
                               offset: const Offset(0, 2),
                             ),
                           ],
                         ),
                         child: IconButton(
-                          icon: const Icon(Icons.add, color: Colors.white),
+                          icon: Icon(Icons.add, color: Theme.of(context).colorScheme.onBackground),
                           onPressed: () => _showAddTaskDialog(context),
                         ),
                       ),
@@ -240,7 +240,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
           : _error != null
               ? Center(
                   child: Text(_error!,
-                      style: const TextStyle(color: Colors.redAccent)))
+                      style: TextStyle(color: Theme.of(context).colorScheme.error)))
               : ListView.builder(
                   // FIX: Changed to ListView.builder for card layout
                   // FIX: Added padding for the whole list
@@ -261,7 +261,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
                       // FIX: Added margin for spacing between cards
                       margin: const EdgeInsets.only(bottom: 12),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF181A20),
+                        color: Theme.of(context).cardColor,
                         borderRadius: BorderRadius.circular(16),
                       ),
                       child: Row(
@@ -277,13 +277,13 @@ class _TaskListScreenState extends State<TaskListScreen> {
                                   Text(
                                     t['title'] ?? '',
                                     style: TextStyle(
-                                      color: Colors.white,
+                                      color: Theme.of(context).colorScheme.onBackground,
                                       fontSize: 18,
                                       fontWeight: FontWeight.w600,
                                       decoration: isCompleted
                                           ? TextDecoration.lineThrough
                                           : null,
-                                      decorationColor: Colors.grey,
+                                      decorationColor: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
                                       decorationThickness: 2,
                                     ),
                                   ),
@@ -292,8 +292,8 @@ class _TaskListScreenState extends State<TaskListScreen> {
                                     'Due: $formattedDate', // FIX: Use formatted date
                                     style: TextStyle(
                                       color: isCompleted
-                                          ? Colors.grey
-                                          : const Color(0xFF64748B),
+                                          ? Theme.of(context).colorScheme.onSurface.withOpacity(0.5)
+                                          : Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
                                       fontSize: 14,
                                       fontWeight: FontWeight.w500,
                                       decoration: isCompleted
@@ -319,15 +319,15 @@ class _TaskListScreenState extends State<TaskListScreen> {
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(6),
                               ),
-                              activeColor: const Color(0xFF2196F3),
+                              activeColor: Theme.of(context).colorScheme.primary,
                               checkColor: Colors.white,
                             ),
                           ),
                           Padding(
                             padding: const EdgeInsets.only(right: 16.0),
                             child: IconButton(
-                              icon: const Icon(Icons.delete,
-                                  color: Colors.redAccent),
+                              icon: Icon(Icons.delete,
+                                  color: Theme.of(context).colorScheme.error),
                               onPressed: () {
                                 if (t['id'] != null) {
                                   _deleteTask(t['id'] as int);
@@ -353,21 +353,21 @@ class _TaskListScreenState extends State<TaskListScreen> {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20),
             gradient: selected
-                ? const LinearGradient(
-                    colors: [Color(0xFFB16CEA), Color(0xFFFF5E69)],
+                ? LinearGradient(
+                    colors: [Theme.of(context).colorScheme.primary, Theme.of(context).colorScheme.primary.withOpacity(0.7)],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   )
                 : null,
-            color: selected ? null : const Color(0xFF23243A),
+            color: selected ? null : Theme.of(context).cardColor,
             border: Border.all(
-              color: selected ? Colors.transparent : Colors.grey.shade700,
+              color: selected ? Colors.transparent : Theme.of(context).colorScheme.onSurface.withOpacity(0.2),
               width: 1.5,
             ),
             boxShadow: selected
                 ? [
                     BoxShadow(
-                      color: Colors.purpleAccent.withAlpha(51),
+                      color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
                       blurRadius: 8,
                       offset: const Offset(0, 2),
                     ),
@@ -378,7 +378,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
             child: Text(
               label,
               style: TextStyle(
-                color: selected ? Colors.white : Colors.grey,
+                color: selected ? Colors.white : Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
                 fontWeight: FontWeight.w600,
                 fontSize: 16,
               ),
@@ -430,27 +430,27 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      backgroundColor: const Color(0xFF0A1021),
-      title: const Text(
+      backgroundColor: Theme.of(context).cardColor,
+      title: Text(
         'Add New Task',
-        style: TextStyle(color: Colors.white),
+        style: TextStyle(color: Theme.of(context).colorScheme.onBackground),
       ),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           TextField(
             controller: _titleController,
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
               labelText: 'Task Title',
-              labelStyle: TextStyle(color: Colors.grey),
+              labelStyle: TextStyle(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7)),
               enabledBorder: UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.grey),
+                borderSide: BorderSide(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.3)),
               ),
               focusedBorder: UnderlineInputBorder(
-                borderSide: BorderSide(color: Color(0xFFB16CEA)),
+                borderSide: BorderSide(color: Theme.of(context).colorScheme.primary),
               ),
             ),
-            style: const TextStyle(color: Colors.white),
+            style: TextStyle(color: Theme.of(context).colorScheme.onBackground),
             autofocus: true,
           ),
           const SizedBox(height: 16),
@@ -459,27 +459,27 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
             controller: _dueDateController,
             readOnly: true, // Prevents keyboard from appearing
             onTap: () => _pickDate(context), // Shows date picker
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
               labelText: 'Due Date (optional)',
-              labelStyle: TextStyle(color: Colors.grey),
+              labelStyle: TextStyle(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7)),
               enabledBorder: UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.grey),
+                borderSide: BorderSide(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.3)),
               ),
               focusedBorder: UnderlineInputBorder(
-                borderSide: BorderSide(color: Color(0xFFB16CEA)),
+                borderSide: BorderSide(color: Theme.of(context).colorScheme.primary),
               ),
-              suffixIcon: Icon(Icons.calendar_today, color: Colors.grey),
+              suffixIcon: Icon(Icons.calendar_today, color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5)),
             ),
-            style: const TextStyle(color: Colors.white),
+            style: TextStyle(color: Theme.of(context).colorScheme.onBackground),
           ),
         ],
       ),
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text(
+          child: Text(
             'Cancel',
-            style: TextStyle(color: Colors.grey),
+            style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5)),
           ),
         ),
         ElevatedButton(
@@ -494,7 +494,7 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
             }
           },
           style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFFB16CEA),
+            backgroundColor: Theme.of(context).colorScheme.primary,
           ),
           child: const Text('Add Task'),
         ),

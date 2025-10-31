@@ -6,7 +6,7 @@ class ServerChatScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0A1021),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Column(
         children: [
           Expanded(
@@ -14,6 +14,7 @@ class ServerChatScreen extends StatelessWidget {
               padding: const EdgeInsets.all(16),
               children: [
                 _buildMessage(
+                  context,
                   'Olivia',
                   'Hey team, just wanted to check in on the progress for the Q3 report. How are we looking?',
                   '',
@@ -21,6 +22,7 @@ class ServerChatScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 24),
                 _buildMessage(
+                  context,
                   'Liam',
                   'Morning Olivia! I\'ve just finished compiling the marketing data. It\'s looking really promising.',
                   '',
@@ -29,13 +31,13 @@ class ServerChatScreen extends StatelessWidget {
                     margin: const EdgeInsets.only(top: 8),
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF1C2439),
+                      color: Theme.of(context).cardColor,
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: const Text(
+                    child: Text(
                       'I\'ll drop the preliminary findings in the #reports channel shortly.',
                       style: TextStyle(
-                        color: Color(0xFF64748B),
+                        color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
                         fontSize: 14,
                       ),
                     ),
@@ -43,6 +45,7 @@ class ServerChatScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 24),
                 _buildTaskAssignment(
+                  context,
                   'Finalize Q3 Presentation Deck',
                   'Noah',
                   'Olivia',
@@ -52,13 +55,14 @@ class ServerChatScreen extends StatelessWidget {
               ],
             ),
           ),
-          _buildMessageInput(),
+          _buildMessageInput(context),
         ],
       ),
     );
   }
 
   Widget _buildMessage(
+    BuildContext context,
     String name,
     String message,
     String avatarUrl,
@@ -75,8 +79,8 @@ class ServerChatScreen extends StatelessWidget {
           child: avatarUrl.isEmpty
               ? Text(
                   name[0],
-                  style: const TextStyle(
-                    color: Colors.white,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onPrimary,
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
                   ),
@@ -92,8 +96,8 @@ class ServerChatScreen extends StatelessWidget {
                 children: [
                   Text(
                     name,
-                    style: const TextStyle(
-                      color: Colors.white,
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onBackground,
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
                     ),
@@ -101,8 +105,8 @@ class ServerChatScreen extends StatelessWidget {
                   const SizedBox(width: 8),
                   Text(
                     time,
-                    style: const TextStyle(
-                      color: Color(0xFF64748B),
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
                       fontSize: 14,
                     ),
                   ),
@@ -111,8 +115,8 @@ class ServerChatScreen extends StatelessWidget {
               const SizedBox(height: 4),
               Text(
                 message,
-                style: const TextStyle(
-                  color: Color(0xFFE2E8F0),
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onBackground.withOpacity(0.9),
                   fontSize: 15,
                 ),
               ),
@@ -125,6 +129,7 @@ class ServerChatScreen extends StatelessWidget {
   }
 
   Widget _buildTaskAssignment(
+    BuildContext context,
     String taskName,
     String assignee,
     String assignedBy,
@@ -134,10 +139,10 @@ class ServerChatScreen extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFF1C2439),
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: const Color(0xFF2D3548),
+          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.2),
           width: 1,
         ),
       ),
@@ -148,8 +153,8 @@ class ServerChatScreen extends StatelessWidget {
             children: [
               Container(
                 padding: const EdgeInsets.all(8),
-                decoration: const BoxDecoration(
-                  color: Color(0xFF0D47A1),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.primary,
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(
@@ -159,10 +164,10 @@ class ServerChatScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 8),
-              const Text(
+              Text(
                 'Task Assigned',
                 style: TextStyle(
-                  color: Colors.white,
+                  color: Theme.of(context).colorScheme.onBackground,
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
                 ),
@@ -171,7 +176,7 @@ class ServerChatScreen extends StatelessWidget {
               Text(
                 '10:35 AM',
                 style: TextStyle(
-                  color: Colors.white.withAlpha(153),
+                  color: Theme.of(context).colorScheme.onBackground.withOpacity(0.6),
                   fontSize: 14,
                 ),
               ),
@@ -180,8 +185,8 @@ class ServerChatScreen extends StatelessWidget {
           const SizedBox(height: 12),
           Text(
             taskName,
-            style: const TextStyle(
-              color: Colors.white,
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.onBackground,
               fontSize: 18,
               fontWeight: FontWeight.w600,
             ),
@@ -189,32 +194,32 @@ class ServerChatScreen extends StatelessWidget {
           const SizedBox(height: 12),
           Row(
             children: [
-              const Text(
+              Text(
                 'Assigned to ',
                 style: TextStyle(
-                  color: Color(0xFF64748B),
+                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
                   fontSize: 14,
                 ),
               ),
               Text(
                 '@$assignee',
-                style: const TextStyle(
-                  color: Colors.blue,
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.primary,
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
                 ),
               ),
-              const Text(
+              Text(
                 ' by ',
                 style: TextStyle(
-                  color: Color(0xFF64748B),
+                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
                   fontSize: 14,
                 ),
               ),
               Text(
                 '@$assignedBy',
-                style: const TextStyle(
-                  color: Colors.blue,
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.primary,
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
                 ),
@@ -229,29 +234,29 @@ class ServerChatScreen extends StatelessWidget {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
-                    color: Colors.red.withAlpha(51),
+                    color: Theme.of(context).colorScheme.error.withOpacity(0.3),
                     borderRadius: BorderRadius.circular(4),
                   ),
-                  child: const Text(
+                  child: Text(
                     'High Priority',
                     style: TextStyle(
-                      color: Colors.red,
+                      color: Theme.of(context).colorScheme.error,
                       fontSize: 12,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
                 ),
               if (isPriority) const SizedBox(width: 12),
-              const Icon(
+              Icon(
                 Icons.calendar_today,
-                color: Color(0xFF64748B),
+                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
                 size: 16,
               ),
               const SizedBox(width: 4),
               Text(
                 'Due: $dueDate',
-                style: const TextStyle(
-                  color: Color(0xFF64748B),
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
                   fontSize: 14,
                 ),
               ),
@@ -262,14 +267,14 @@ class ServerChatScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildMessageInput() {
+  Widget _buildMessageInput(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(16),
-      decoration: const BoxDecoration(
-        color: Color(0xFF1C2439),
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardColor,
         border: Border(
           top: BorderSide(
-            color: Color(0xFF2D3548),
+            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.2),
             width: 1,
           ),
         ),
@@ -278,37 +283,39 @@ class ServerChatScreen extends StatelessWidget {
         children: [
           IconButton(
             icon:
-                const Icon(Icons.add_circle_outline, color: Color(0xFF64748B)),
+                Icon(Icons.add_circle_outline, color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5)),
             onPressed: () {},
           ),
           Expanded(
-            child: TextField(
+            child: Builder(
+              builder: (context) => TextField(
               decoration: InputDecoration(
                 hintText: 'Message #general-chat',
-                hintStyle: const TextStyle(
-                  color: Color(0xFF64748B),
+                hintStyle: TextStyle(
+                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
                 ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(24),
                   borderSide: BorderSide.none,
                 ),
                 filled: true,
-                fillColor: const Color(0xFF0A1021),
+                fillColor: Theme.of(context).scaffoldBackgroundColor,
                 contentPadding: const EdgeInsets.symmetric(
                   horizontal: 16,
                   vertical: 8,
                 ),
               ),
-              style: const TextStyle(color: Colors.white),
+              style: TextStyle(color: Theme.of(context).colorScheme.onBackground),
+            ),
             ),
           ),
           IconButton(
-            icon: const Icon(Icons.sentiment_satisfied_alt,
-                color: Color(0xFF64748B)),
+            icon: Icon(Icons.sentiment_satisfied_alt,
+                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5)),
             onPressed: () {},
           ),
           IconButton(
-            icon: const Icon(Icons.gif_box_outlined, color: Color(0xFF64748B)),
+            icon: Icon(Icons.gif_box_outlined, color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5)),
             onPressed: () {},
           ),
         ],

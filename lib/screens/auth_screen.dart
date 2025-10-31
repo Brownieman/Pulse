@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../home_screen.dart';
+import 'package:talkzy_beta1/controllers/auth_controller.dart';
 
 class AuthScreen extends StatefulWidget {
   const AuthScreen({super.key});
@@ -24,29 +25,108 @@ class _AuthScreenState extends State<AuthScreen> {
   }
 
   Future<void> _authenticate() async {
+    // Validate inputs
+    final email = _emailController.text.trim();
+    final password = _passwordController.text.trim();
+
+    print('🔐 _authenticate called');
+    print('   Mode: ${isLogin ? "LOG IN" : "SIGN UP"}');
+    print('   Email: $email');
+    print('   Password length: ${password.length}');
+
+    if (email.isEmpty || password.isEmpty) {
+      print('❌ Validation failed: Empty email or password');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter email and password')),
+      );
+      return;
+    }
+
+    if (!email.contains('@')) {
+      print('❌ Validation failed: Invalid email format');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter a valid email')),
+      );
+      return;
+    }
+
+    if (password.length < 6) {
+      print('❌ Validation failed: Password too short');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Password must be at least 6 characters')),
+      );
+      return;
+    }
+
+    print('✅ Validation passed');
     setState(() => _isLoading = true);
     try {
+      // Get or create AuthController
+      AuthController auth;
+      try {
+        auth = Get.find<AuthController>();
+        print('✅ Found existing AuthController');
+      } catch (e) {
+        print('⚠️ Creating new AuthController');
+        auth = Get.put(AuthController());
+      }
+
+      print('🔐 Starting authentication: ${isLogin ? "Sign In" : "Sign Up"}');
+      print('📧 Email: $email');
+
       if (isLogin) {
-        await Supabase.instance.client.auth.signInWithPassword(
-          email: _emailController.text.trim(),
-          password: _passwordController.text.trim(),
+        await auth.signInWithEmailAndPassword(
+          email: email,
+          password: password,
         );
       } else {
-        await Supabase.instance.client.auth.signUp(
-          email: _emailController.text.trim(),
-          password: _passwordController.text.trim(),
+        final displayName = email.contains('@') ? email.split('@').first : email;
+        await auth.registerWithEmailAndPassword(
+          email: email,
+          password: password,
+          displayName: displayName,
         );
       }
-      // Navigate to home on success
-      if (mounted) {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const HomeScreen()),
-        );
-      }
+      
+      print('✅ Authentication successful');
     } catch (e) {
+      print('❌ Authentication error: $e');
       if (mounted) {
+        // Provide user-friendly error messages
+        String errorMessage = e.toString();
+        
+        // Check for common authentication errors
+        if (errorMessage.contains('user-not-found')) {
+          errorMessage = 'No account found with this email. Please sign up first.';
+        } else if (errorMessage.contains('wrong-password')) {
+          errorMessage = 'Incorrect password. Please try again.';
+        } else if (errorMessage.contains('email-already-in-use')) {
+          errorMessage = 'This email is already registered. Please log in instead.';
+        } else if (errorMessage.contains('invalid-email')) {
+          errorMessage = 'Invalid email address. Please check and try again.';
+        } else if (errorMessage.contains('weak-password')) {
+          errorMessage = 'Password is too weak. Use at least 6 characters.';
+        } else if (errorMessage.contains('network-request-failed')) {
+          errorMessage = 'Network error. Please check your internet connection.';
+        } else if (errorMessage.contains('too-many-requests')) {
+          errorMessage = 'Too many attempts. Please try again later.';
+        }
+        
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: ${e.toString()}')),
+          SnackBar(
+            content: Text(errorMessage),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 5),
+            action: errorMessage.contains('sign up') 
+                ? SnackBarAction(
+                    label: 'Sign Up',
+                    textColor: Colors.white,
+                    onPressed: () {
+                      setState(() => isLogin = false);
+                    },
+                  )
+                : null,
+          ),
         );
       }
     } finally {
@@ -86,8 +166,10 @@ class _AuthScreenState extends State<AuthScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    
     return Scaffold(
-      backgroundColor: const Color(0xFF0A1021),
+      backgroundColor: colorScheme.background,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16),
@@ -118,7 +200,7 @@ class _AuthScreenState extends State<AuthScreen> {
               Container(
                 height: 48,
                 decoration: BoxDecoration(
-                  color: const Color(0xFF2C2C30),
+                  color: colorScheme.surface,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Row(
@@ -129,10 +211,10 @@ class _AuthScreenState extends State<AuthScreen> {
                         child: Container(
                           decoration: BoxDecoration(
                             gradient: isLogin
-                                ? const LinearGradient(
+                                ? LinearGradient(
                                     colors: [
-                                      Color(0xFF6A11CB),
-                                      Color(0xFFF300B1)
+                                      colorScheme.primary,
+                                      colorScheme.primary.withOpacity(0.8)
                                     ],
                                   )
                                 : null,
@@ -144,7 +226,7 @@ class _AuthScreenState extends State<AuthScreen> {
                               style: TextStyle(
                                 color: isLogin
                                     ? Colors.white
-                                    : const Color(0xFFEAEAEA),
+                                    : colorScheme.onSurface.withOpacity(0.7),
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
@@ -158,10 +240,10 @@ class _AuthScreenState extends State<AuthScreen> {
                         child: Container(
                           decoration: BoxDecoration(
                             gradient: !isLogin
-                                ? const LinearGradient(
+                                ? LinearGradient(
                                     colors: [
-                                      Color(0xFF6A11CB),
-                                      Color(0xFFF300B1)
+                                      colorScheme.primary,
+                                      colorScheme.primary.withOpacity(0.8)
                                     ],
                                   )
                                 : null,
@@ -173,7 +255,7 @@ class _AuthScreenState extends State<AuthScreen> {
                               style: TextStyle(
                                 color: !isLogin
                                     ? Colors.white
-                                    : const Color(0xFFEAEAEA),
+                                    : colorScheme.onSurface.withOpacity(0.7),
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
@@ -184,17 +266,32 @@ class _AuthScreenState extends State<AuthScreen> {
                   ],
                 ),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 16),
+              // Helpful hint
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: Text(
+                  isLogin 
+                      ? 'Log in with your existing account' 
+                      : 'Create a new account to get started',
+                  style: TextStyle(
+                    color: colorScheme.onBackground.withOpacity(0.7),
+                    fontSize: 14,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              const SizedBox(height: 16),
               // Email Field
               TextFormField(
                 controller: _emailController,
                 keyboardType: TextInputType.emailAddress,
-                style: const TextStyle(color: Colors.white),
+                style: TextStyle(color: colorScheme.onSurface),
                 decoration: InputDecoration(
                   labelText: 'Email',
-                  labelStyle: const TextStyle(color: Color(0xFFEAEAEA)),
+                  labelStyle: TextStyle(color: colorScheme.onSurface.withOpacity(0.7)),
                   filled: true,
-                  fillColor: const Color(0xFF2C2C30),
+                  fillColor: colorScheme.surface,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide.none,
@@ -202,7 +299,7 @@ class _AuthScreenState extends State<AuthScreen> {
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide:
-                        const BorderSide(color: Color(0xFF6A11CB), width: 2),
+                        BorderSide(color: colorScheme.primary, width: 2),
                   ),
                 ),
               ),
@@ -211,12 +308,12 @@ class _AuthScreenState extends State<AuthScreen> {
               TextFormField(
                 controller: _passwordController,
                 obscureText: _obscurePassword,
-                style: const TextStyle(color: Colors.white),
+                style: TextStyle(color: colorScheme.onSurface),
                 decoration: InputDecoration(
                   labelText: 'Password',
-                  labelStyle: const TextStyle(color: Color(0xFFEAEAEA)),
+                  labelStyle: TextStyle(color: colorScheme.onSurface.withOpacity(0.7)),
                   filled: true,
-                  fillColor: const Color(0xFF2C2C30),
+                  fillColor: colorScheme.surface,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide.none,
@@ -224,7 +321,7 @@ class _AuthScreenState extends State<AuthScreen> {
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide:
-                        const BorderSide(color: Color(0xFF6A11CB), width: 2),
+                        BorderSide(color: colorScheme.primary, width: 2),
                   ),
                   suffixIcon: IconButton(
                     icon: Icon(
@@ -270,8 +367,8 @@ class _AuthScreenState extends State<AuthScreen> {
                   ),
                   child: Ink(
                     decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [Color(0xFF6A11CB), Color(0xFFF300B1)],
+                      gradient: LinearGradient(
+                        colors: [colorScheme.primary, colorScheme.primary.withOpacity(0.8)],
                       ),
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -295,15 +392,15 @@ class _AuthScreenState extends State<AuthScreen> {
               // Divider
               Row(
                 children: [
-                  const Expanded(child: Divider(color: Color(0xFF2C2C30))),
+                  Expanded(child: Divider(color: colorScheme.onSurface.withOpacity(0.2))),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Text(
                       'Or continue with',
-                      style: TextStyle(color: Colors.grey[400], fontSize: 14),
+                      style: TextStyle(color: colorScheme.onSurface.withOpacity(0.5), fontSize: 14),
                     ),
                   ),
-                  const Expanded(child: Divider(color: Color(0xFF2C2C30))),
+                  Expanded(child: Divider(color: colorScheme.onSurface.withOpacity(0.2))),
                 ],
               ),
               const SizedBox(height: 24),
@@ -353,7 +450,7 @@ class _AuthScreenState extends State<AuthScreen> {
         width: 56,
         height: 56,
         decoration: BoxDecoration(
-          color: const Color(0xFF2C2C30),
+          color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(28),
         ),
         child: Center(child: child),

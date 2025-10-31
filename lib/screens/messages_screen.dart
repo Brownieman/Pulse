@@ -65,7 +65,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0A1021),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: contacts.isEmpty
             ? const Center(child: CircularProgressIndicator())
@@ -75,25 +75,25 @@ class _MessagesScreenState extends State<MessagesScreen> {
                   children: [
                     Container(
                       decoration: BoxDecoration(
-                        color: const Color(0xFF1C2439),
+                        color: Theme.of(context).cardColor,
                         borderRadius: BorderRadius.circular(15),
                       ),
                       padding: const EdgeInsets.only(
                           top: 3, bottom: 3, left: 16, right: 16),
                       child: Row(
                         children: [
-                          const Icon(Icons.search,
-                              color: Color(0xFF64748B), size: 22),
+                          Icon(Icons.search,
+                              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5), size: 22),
                           const SizedBox(width: 13),
                           Expanded(
                             child: TextField(
                               controller: _searchController,
-                              style: const TextStyle(
-                                  color: Colors.white, fontSize: 16),
-                              decoration: const InputDecoration(
+                              style: TextStyle(
+                                  color: Theme.of(context).colorScheme.onBackground, fontSize: 16),
+                              decoration: InputDecoration(
                                 hintText: 'Search messages',
                                 hintStyle: TextStyle(
-                                    color: Color(0xFF64748B), fontSize: 16),
+                                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5), fontSize: 16),
                                 border: InputBorder.none,
                                 contentPadding:
                                     EdgeInsets.symmetric(vertical: 16),
@@ -115,7 +115,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                               margin: const EdgeInsets.only(bottom: 12),
                               padding: const EdgeInsets.all(12),
                               decoration: BoxDecoration(
-                                color: const Color(0xFF1C2439),
+                                color: Theme.of(context).cardColor,
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Row(
@@ -138,7 +138,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                                               shape: BoxShape.circle,
                                               border: Border.all(
                                                   color:
-                                                      const Color(0xFF1C2439),
+                                                      Theme.of(context).cardColor,
                                                   width: 2),
                                             ),
                                           ),
@@ -156,14 +156,14 @@ class _MessagesScreenState extends State<MessagesScreen> {
                                               MainAxisAlignment.spaceBetween,
                                           children: [
                                             Text(c.name,
-                                                style: const TextStyle(
-                                                    color: Colors.white,
+                                                style: TextStyle(
+                                                    color: Theme.of(context).colorScheme.onBackground,
                                                     fontSize: 16,
                                                     fontWeight:
                                                         FontWeight.w600)),
                                             Text(_formatTime(c.lastSeen),
-                                                style: const TextStyle(
-                                                    color: Color(0xFF64748B),
+                                                style: TextStyle(
+                                                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
                                                     fontSize: 12)),
                                           ],
                                         ),
@@ -172,8 +172,8 @@ class _MessagesScreenState extends State<MessagesScreen> {
                                           children: [
                                             Expanded(
                                               child: Text(c.lastMessage,
-                                                  style: const TextStyle(
-                                                      color: Color(0xFF64748B),
+                                                  style: TextStyle(
+                                                      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
                                                       fontSize: 14),
                                                   maxLines: 1,
                                                   overflow:
@@ -189,7 +189,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                                                         vertical: 4),
                                                 decoration: BoxDecoration(
                                                     color:
-                                                        const Color(0xFF2B5BFF),
+                                                        Theme.of(context).colorScheme.primary,
                                                     borderRadius:
                                                         BorderRadius.circular(
                                                             10)),

@@ -7,21 +7,21 @@ class ServersScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0A1021),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(56),
         child: AppBar(
-          backgroundColor: const Color(0xFF0A1021),
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           elevation: 0,
           leading: IconButton(
-            icon: const Icon(Icons.menu, color: Colors.white),
+            icon: Icon(Icons.menu, color: Theme.of(context).colorScheme.onBackground),
             onPressed: () {},
           ),
           centerTitle: true,
-          title: const Text(
+          title: Text(
             'Servers',
             style: TextStyle(
-              color: Colors.white,
+              color: Theme.of(context).colorScheme.onBackground,
               fontSize: 22,
               fontWeight: FontWeight.bold,
             ),
@@ -33,10 +33,10 @@ class ServersScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'Your Servers',
               style: TextStyle(
-                color: Colors.white,
+                color: Theme.of(context).colorScheme.onBackground,
                 fontSize: 20,
                 fontWeight: FontWeight.w600,
               ),
@@ -66,10 +66,10 @@ class ServersScreen extends StatelessWidget {
               const Icon(Icons.inventory_2_outlined, color: Colors.white),
             ),
             const SizedBox(height: 32),
-            const Text(
+            Text(
               'Create a Server',
               style: TextStyle(
-                color: Colors.white,
+                color: Theme.of(context).colorScheme.onBackground,
                 fontSize: 20,
                 fontWeight: FontWeight.w600,
               ),
@@ -83,7 +83,7 @@ class ServersScreen extends StatelessWidget {
                 width: double.infinity,
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF0D47A1),
+                  color: Theme.of(context).colorScheme.primary,
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Row(
@@ -101,10 +101,10 @@ class ServersScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: 16),
-                    const Text(
+                    Text(
                       'New Server',
                       style: TextStyle(
-                        color: Colors.white,
+                        color: Theme.of(context).colorScheme.onPrimary,
                         fontSize: 16,
                         fontWeight: FontWeight.w500,
                       ),
@@ -134,10 +134,10 @@ class ServersScreen extends StatelessWidget {
                 width: double.infinity,
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF1C2439),
+                  color: Theme.of(context).cardColor,
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(
-                    color: const Color(0xFF2D3548),
+                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.2),
                     width: 1,
                   ),
                 ),
@@ -155,17 +155,17 @@ class ServersScreen extends StatelessWidget {
                     const SizedBox(width: 16),
                     Text(
                       name,
-                      style: const TextStyle(
-                        color: Colors.white,
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onBackground,
                         fontSize: 16,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
                     const Spacer(),
                     IconButton(
-                      icon: const Icon(
+                      icon: Icon(
                         Icons.more_vert,
-                        color: Color(0xFF64748B),
+                        color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
                       ),
                       onPressed: () {
                         // Handle server options

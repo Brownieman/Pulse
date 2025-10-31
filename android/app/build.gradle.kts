@@ -1,46 +1,31 @@
-import java.io.File
-import java.util.Properties
-
 plugins {
     id("com.android.application")
+    // START: FlutterFire Configuration
+    id("com.google.gms.google-services")
+    // END: FlutterFire Configuration
     id("kotlin-android")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
 }
 
-// Load local.properties to detect SDK dir and whether requested NDK exists
-val localProps = Properties().apply {
-    val f = rootProject.file("local.properties")
-    if (f.exists()) f.inputStream().use { this.load(it) }
-}
-val sdkDirFromLocal = localProps.getProperty("sdk.dir")
-val requestedNdkVersion = flutter.ndkVersion
-
 android {
-    namespace = "com.example.new_task_manage"
+    namespace = "com.example.pulse_main"
     compileSdk = flutter.compileSdkVersion
-    // Only pin the NDK if the requested version folder actually exists.
-    // This avoids build failures on machines without the NDK installed.
-    val sdkDir: File? = sdkDirFromLocal?.let { File(it) }
-    val ndkFolder: File? = sdkDir?.let { File(it, "ndk/$requestedNdkVersion") }
-    ndkFolder?.let { folder ->
-        if (folder.resolve("source.properties").exists()) {
-            ndkVersion = requestedNdkVersion
-        }
-    }
+    ndkVersion = flutter.ndkVersion
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
+        isCoreLibraryDesugaringEnabled = true
     }
 
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_17.toString()
+        jvmTarget = JavaVersion.VERSION_11.toString()
     }
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.example.new_task_manage"
+        applicationId = "com.example.pulse_main"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
@@ -56,6 +41,10 @@ android {
             signingConfig = signingConfigs.getByName("debug")
         }
     }
+}
+
+dependencies {
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
 }
 
 flutter {

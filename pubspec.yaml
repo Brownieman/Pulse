@@ -1,5 +1,5 @@
-name: new_task_manage
-description: A Flutter dashboard app for managing tasks efficiently.
+name: talkzy_beta1
+description: Pulse - A modern messaging app with friend requests and real-time chat.
 publish_to: 'none'
 
 version: 1.0.0+1
@@ -18,6 +18,28 @@ dependencies:
   flutter_contacts: ^1.1.7
   intl: ^0.19.0
   path_provider: ^2.1.3
+  cupertino_icons: ^1.0.8
+  google_fonts: ^6.3.0
+  animated_splash_screen: ^1.3.0
+  flutter_secure_storage: ^9.2.4
+  http: ^1.5.0
+  flutter_bloc: ^9.1.1
+  get: ^4.7.2
+  firebase_auth: ^5.3.1
+  firebase_core: ^3.6.0
+  cloud_firestore: ^5.4.4
+  uuid: ^4.5.1
+  loading_animation_widget: ^1.3.0
+  
+  shared_preferences: ^2.2.3
+  
+  flutter_local_notifications: ^19.5.0
+  firebase_messaging: ^15.0.2
+ 
+  rxdart: ^0.28.0
+  emoji_picker_flutter: ^2.1.1
+  cached_network_image: ^3.3.1
+  flutter_cache_manager: ^3.3.1
 
 
 dev_dependencies:
@@ -30,3 +52,5 @@ flutter:
   uses-material-design: true
   assets:
     - assets/data/contacts.json
+    - assets/images/
+    - assets/

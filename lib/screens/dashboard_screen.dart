@@ -6,24 +6,24 @@ class DashboardScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF19232F),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 18.0, vertical: 12),
         child: ListView(
           children: [
             Container(
               decoration: BoxDecoration(
-                color: const Color(0xFF223042),
+                color: Theme.of(context).cardColor,
                 borderRadius: BorderRadius.circular(16),
               ),
               padding: const EdgeInsets.all(20),
-              child: const Column(
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     'Active Tasks',
                     style: TextStyle(
-                      color: Color(0xFFBFD1DF),
+                      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.8),
                       fontSize: 18,
                       fontWeight: FontWeight.w500,
                     ),
@@ -32,7 +32,7 @@ class DashboardScreen extends StatelessWidget {
                   Text(
                     '12',
                     style: TextStyle(
-                      color: Colors.white,
+                      color: Theme.of(context).colorScheme.onBackground,
                       fontSize: 36,
                       fontWeight: FontWeight.bold,
                     ),
@@ -41,65 +41,65 @@ class DashboardScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 28),
-            const Text(
+            Text(
               'Trust Score',
               style: TextStyle(
-                color: Colors.white,
+                color: Theme.of(context).colorScheme.onBackground,
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
               ),
             ),
             const SizedBox(height: 8),
-            const Text(
+            Text(
               'Tier 2',
               style: TextStyle(
-                color: Color(0xFFBFD1DF),
+                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.8),
                 fontSize: 16,
                 fontWeight: FontWeight.w500,
               ),
             ),
             const SizedBox(height: 8),
-            const LinearProgressIndicator(
+            LinearProgressIndicator(
               value: 0.75,
               minHeight: 8,
-              backgroundColor: Colors.white12,
-              valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF2D9CDB)),
+              backgroundColor: Theme.of(context).colorScheme.onSurface.withOpacity(0.1),
+              valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).colorScheme.primary),
             ),
             const SizedBox(height: 4),
-            const Text(
+            Text(
               '750/1000',
               style: TextStyle(
-                color: Color(0xFF7F95A8),
+                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
                 fontSize: 15,
               ),
             ),
             const SizedBox(height: 28),
             Container(
               decoration: BoxDecoration(
-                color: const Color(0xFF223042),
+                color: Theme.of(context).cardColor,
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: const Color(0xFF1F2C36)),
+                border: Border.all(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.1)),
               ),
               padding: const EdgeInsets.all(20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     'Task Completion Rate',
                     style: TextStyle(
-                      color: Color(0xFFBFD1DF),
+                      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.8),
                       fontSize: 18,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
                   const SizedBox(height: 12),
-                  const Row(
+                  Row(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       Text(
                         '85%',
                         style: TextStyle(
-                          color: Colors.white,
+                          color: Theme.of(context).colorScheme.onBackground,
                           fontSize: 36,
                           fontWeight: FontWeight.bold,
                         ),
@@ -108,14 +108,14 @@ class DashboardScreen extends StatelessWidget {
                       Text(
                         'Last 30 Days ',
                         style: TextStyle(
-                          color: Color(0xFFBFD1DF),
+                          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.8),
                           fontSize: 16,
                         ),
                       ),
                       Text(
                         '+10%',
                         style: TextStyle(
-                          color: Color(0xFF3ED173),
+                          color: Colors.green,
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
                         ),
@@ -131,31 +131,31 @@ class DashboardScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  const Row(
+                  Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text('Week 1',
                           style: TextStyle(
-                              color: Color(0xFFBFD1DF), fontSize: 15)),
+                              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.8), fontSize: 15)),
                       Text('Week 2',
                           style: TextStyle(
-                              color: Color(0xFFBFD1DF), fontSize: 15)),
+                              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.8), fontSize: 15)),
                       Text('Week 3',
                           style: TextStyle(
-                              color: Color(0xFFBFD1DF), fontSize: 15)),
+                              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.8), fontSize: 15)),
                       Text('Week 4',
                           style: TextStyle(
-                              color: Color(0xFFBFD1DF), fontSize: 15)),
+                              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.8), fontSize: 15)),
                     ],
                   ),
                 ],
               ),
             ),
             const SizedBox(height: 28),
-            const Text(
+            Text(
               'Upcoming Deadlines',
               style: TextStyle(
-                color: Colors.white,
+                color: Theme.of(context).colorScheme.onBackground,
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
               ),
@@ -190,12 +190,12 @@ class _DeadlineItem extends StatelessWidget {
         children: [
           Text(
             title,
-            style: const TextStyle(
-                fontSize: 20, fontWeight: FontWeight.w600, color: Colors.white),
+            style: TextStyle(
+                fontSize: 20, fontWeight: FontWeight.w600, color: Theme.of(context).colorScheme.onBackground),
           ),
           const SizedBox(height: 6),
           Text(subtitle,
-              style: const TextStyle(color: Color(0xFF7F95A8), fontSize: 16)),
+              style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6), fontSize: 16)),
         ],
       ),
     );
@@ -221,21 +221,21 @@ class _LineChartPainter extends CustomPainter {
     ]; // Example data
 
     final areaPaint = Paint()
-      ..shader = const LinearGradient(
-        colors: [Color(0x332D9CDB), Color(0x00000000)],
+      ..shader = LinearGradient(
+        colors: [Colors.blue.withOpacity(0.2), Colors.transparent],
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,
       ).createShader(Rect.fromLTWH(0, 0, size.width, size.height));
 
     final linePaint = Paint()
-      ..color = const Color(0xFF7FBCE6)
+      ..color = Colors.blue
       ..strokeWidth = 3
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round;
 
-    final bgPaint = Paint()..color = const Color(0xFF223042);
+    final bgPaint = Paint()..color = Colors.transparent;
     final gridPaint = Paint()
-      ..color = const Color(0x112D9CDB)
+      ..color = Colors.grey.withOpacity(0.1)
       ..style = PaintingStyle.stroke;
 
     // background

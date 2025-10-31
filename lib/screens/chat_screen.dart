@@ -57,9 +57,9 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0A1021),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF1C2439),
+        backgroundColor: Theme.of(context).cardColor,
         title: Row(
           children: [
             CircleAvatar(
@@ -69,12 +69,12 @@ class _ChatScreenState extends State<ChatScreen> {
             const SizedBox(width: 12),
             Text(
               widget.contact.name,
-              style: const TextStyle(color: Colors.white, fontSize: 18),
+              style: TextStyle(color: Theme.of(context).colorScheme.onBackground, fontSize: 18),
             ),
           ],
         ),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          icon: Icon(Icons.arrow_back, color: Theme.of(context).colorScheme.onBackground),
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
@@ -96,13 +96,16 @@ class _ChatScreenState extends State<ChatScreen> {
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
                       color: isMe
-                          ? const Color(0xFF2B5BFF)
-                          : const Color(0xFF1C2439),
+                          ? Theme.of(context).colorScheme.primary
+                          : Theme.of(context).cardColor,
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
                       message.text,
-                      style: const TextStyle(color: Colors.white, fontSize: 16),
+                      style: TextStyle(
+                        color: isMe ? Colors.white : Theme.of(context).colorScheme.onBackground,
+                        fontSize: 16,
+                      ),
                     ),
                   ),
                 );
@@ -111,18 +114,18 @@ class _ChatScreenState extends State<ChatScreen> {
           ),
           Container(
             padding: const EdgeInsets.all(16),
-            color: const Color(0xFF1C2439),
+            color: Theme.of(context).cardColor,
             child: Row(
               children: [
                 Expanded(
                   child: TextField(
                     controller: _messageController,
-                    style: const TextStyle(color: Colors.white),
+                    style: TextStyle(color: Theme.of(context).colorScheme.onBackground),
                     decoration: InputDecoration(
                       hintText: 'Type a message...',
-                      hintStyle: const TextStyle(color: Color(0xFF64748B)),
+                      hintStyle: TextStyle(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5)),
                       filled: true,
-                      fillColor: const Color(0xFF0A1021),
+                      fillColor: Theme.of(context).scaffoldBackgroundColor,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(20),
                         borderSide: BorderSide.none,
@@ -135,7 +138,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 ),
                 const SizedBox(width: 8),
                 IconButton(
-                  icon: const Icon(Icons.send, color: Color(0xFF2B5BFF)),
+                  icon: Icon(Icons.send, color: Theme.of(context).colorScheme.primary),
                   onPressed: _sendMessage,
                 ),
               ],

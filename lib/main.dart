@@ -1,7 +1,11 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 // import 'screens/chat_screen.dart';
 import 'screens/messages_screen.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart' as fb_auth;
+import 'firebase_options.dart';
 // import 'home_screen.dart';
 import 'models/contact.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -9,6 +13,12 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_contacts/flutter_contacts.dart' as fc;
 import 'screens/auth_screen.dart';
 import 'home_screen.dart';
+import 'routes/app_pages.dart';
+import 'controllers/auth_controller.dart';
+import 'controllers/chat_theme_controller.dart';
+import 'controllers/main_controller.dart';
+import 'controllers/theme_controller.dart';
+import 'utils/app_theme.dart';
 
 // Trust Score Section for Dashboard
 class _TrustScoreSection extends StatelessWidget {
@@ -52,6 +62,10 @@ Future<void> main() async {
     url: 'https://qmugitnuxgzausbeexhs.supabase.co',
     anonKey:
         'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFtdWdpdG51eGd6YXVzYmVleGhzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE0NzkzMDcsImV4cCI6MjA3NzA1NTMwN30.JbDRJ6rKQM0euPOd1zwvKpBJqCiUF0rXisY_hWbIwiA',
+  );
+
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
   );
   runApp(const NewTaskManageApp());
 }
@@ -1045,46 +1059,29 @@ class AuthWrapper extends StatefulWidget {
 }
 
 class _AuthWrapperState extends State<AuthWrapper> {
-  User? _user;
+  fb_auth.User? _user;
   bool _isLoading = true;
-  late final StreamSubscription<AuthState> _authStateSubscription;
+  late final StreamSubscription<fb_auth.User?> _authStateSubscription;
 
   @override
   void initState() {
     super.initState();
-    _checkCurrentSession();
+    // Initialize from current Firebase user and listen to auth changes
+    _user = fb_auth.FirebaseAuth.instance.currentUser;
+    _isLoading = false;
     _authStateSubscription =
-        Supabase.instance.client.auth.onAuthStateChange.listen(
-      (data) {
-        final Session? session = data.session;
-
-        setState(() {
-          _user = session?.user;
-          _isLoading = false;
-        });
-      },
-    );
+        fb_auth.FirebaseAuth.instance.authStateChanges().listen((user) {
+      setState(() {
+        _user = user;
+        _isLoading = false;
+      });
+    });
   }
 
   @override
   void dispose() {
     _authStateSubscription.cancel();
     super.dispose();
-  }
-
-  Future<void> _checkCurrentSession() async {
-    try {
-      final session = Supabase.instance.client.auth.currentSession;
-      setState(() {
-        _user = session?.user;
-        _isLoading = false;
-      });
-    } catch (e) {
-      setState(() {
-        _user = null;
-        _isLoading = false;
-      });
-    }
   }
 
   @override
@@ -1129,67 +1126,33 @@ class _NewTaskManageAppState extends State<NewTaskManageApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    // Initialize ThemeController
+    final themeController = Get.put(ThemeController());
+    
+    return Obx(() => GetMaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'TaskChain Messenger',
-      theme: _buildDarkTheme(),
+      theme: AppTheme.lightTheme(
+        accentColor: AppTheme.getAccentColor(themeController.accentColor),
+      ),
+      darkTheme: AppTheme.darkTheme(
+        accentColor: AppTheme.getAccentColor(themeController.accentColor),
+      ),
+      themeMode: themeController.themeMode,
+      getPages: AppPages.pages,
+      initialBinding: BindingsBuilder(() {
+        if (!Get.isRegistered<AuthController>()) Get.put(AuthController());
+        if (!Get.isRegistered<ChatThemeController>()) {
+          Get.put(ChatThemeController());
+        }
+        if (!Get.isRegistered<MainController>()) {
+          Get.put(MainController());
+        }
+        if (!Get.isRegistered<ThemeController>()) {
+          Get.put(ThemeController());
+        }
+      }),
       home: const AuthWrapper(),
-    );
-  }
-
-  ThemeData _buildDarkTheme() {
-    const background = Color(0xFF0A1021); // deep dark blue
-    const card = Color(0xFF16243A); // dark blue card
-    const primary = Color(0xFF2196F3); // light blue
-    const accent = Color(0xFF64B5F6); // lighter blue accent
-    const text = Color(0xFFE3F2FD); // very light blue text
-    const subtext = Color(0xFF90CAF9); // light blue subtext
-
-    final base = ThemeData.dark();
-    return base.copyWith(
-      scaffoldBackgroundColor: background,
-      colorScheme: base.colorScheme.copyWith(
-        primary: primary,
-        secondary: accent,
-        surface: card,
-        onPrimary: Colors.white,
-        onSurface: text,
-      ),
-      cardColor: card,
-      textTheme: base.textTheme.apply(bodyColor: text, displayColor: text),
-      appBarTheme: const AppBarTheme(
-        backgroundColor: background,
-        foregroundColor: text,
-        elevation: 0,
-        centerTitle: true,
-        iconTheme: IconThemeData(color: accent),
-        titleTextStyle: TextStyle(
-          color: text,
-          fontSize: 22,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-      bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-        backgroundColor: background,
-        selectedItemColor: accent,
-        unselectedItemColor: subtext,
-        showUnselectedLabels: true,
-      ),
-      inputDecorationTheme: const InputDecorationTheme(
-        filled: true,
-        fillColor: card,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.all(Radius.circular(12)),
-          borderSide: BorderSide(color: accent),
-        ),
-        hintStyle: TextStyle(color: subtext),
-      ),
-      iconTheme: const IconThemeData(color: accent),
-      floatingActionButtonTheme: const FloatingActionButtonThemeData(
-        backgroundColor: accent,
-        foregroundColor: background,
-      ),
-      dividerColor: accent.withAlpha(51),
-    );
+    ));
   }
 }

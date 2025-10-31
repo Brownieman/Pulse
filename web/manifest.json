@@ -1,6 +1,6 @@
 {
-    "name": "new_task_manage",
-    "short_name": "new_task_manage",
+    "name": "pulse_main",
+    "short_name": "pulse_main",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

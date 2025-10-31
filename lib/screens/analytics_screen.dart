@@ -5,22 +5,24 @@ class AnalyticsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    
     return Scaffold(
-      backgroundColor: const Color(0xFF0A1021),
+      backgroundColor: colorScheme.background,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        title: const Text(
+        title: Text(
           'Analytics',
           style: TextStyle(
-            color: Colors.white,
+            color: colorScheme.onBackground,
             fontSize: 24,
             fontWeight: FontWeight.w600,
           ),
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.more_horiz, color: Colors.white),
+            icon: Icon(Icons.more_horiz, color: colorScheme.onBackground),
             onPressed: () {},
           ),
         ],
@@ -30,16 +32,17 @@ class AnalyticsScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'Overview',
               style: TextStyle(
-                color: Colors.white,
+                color: colorScheme.onBackground,
                 fontSize: 20,
                 fontWeight: FontWeight.w600,
               ),
             ),
             const SizedBox(height: 16),
             _buildOverviewCard(
+              context,
               title: 'Tasks Completed',
               value: '120',
               change: '+10%',
@@ -47,6 +50,7 @@ class AnalyticsScreen extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             _buildOverviewCard(
+              context,
               title: 'Messages Sent',
               value: '350',
               change: '+5%',
@@ -54,16 +58,17 @@ class AnalyticsScreen extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             _buildOverviewCard(
+              context,
               title: 'Team Activity',
               value: '20',
               change: '-2%',
               isPositive: false,
             ),
             const SizedBox(height: 24),
-            const Text(
+            Text(
               'Performance',
               style: TextStyle(
-                color: Colors.white,
+                color: colorScheme.onBackground,
                 fontSize: 20,
                 fontWeight: FontWeight.w600,
               ),
@@ -73,10 +78,10 @@ class AnalyticsScreen extends StatelessWidget {
               width: double.infinity,
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: const Color(0xFF1C2439),
+                color: colorScheme.surface,
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(
-                  color: const Color(0xFF2D3548),
+                  color: colorScheme.onSurface.withOpacity(0.1),
                   width: 1,
                 ),
               ),
@@ -90,10 +95,10 @@ class AnalyticsScreen extends StatelessWidget {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
+                          Text(
                             'Tasks Completed Over Time',
                             style: TextStyle(
-                              color: Color(0xFF64748B),
+                              color: colorScheme.onSurface.withOpacity(0.6),
                               fontSize: 14,
                             ),
                           ),
@@ -131,10 +136,10 @@ class AnalyticsScreen extends StatelessWidget {
                           ),
                         ],
                       ),
-                      const Text(
+                      Text(
                         'Last 7 Days',
                         style: TextStyle(
-                          color: Color(0xFF64748B),
+                          color: colorScheme.onSurface.withOpacity(0.6),
                           fontSize: 12,
                         ),
                       ),
@@ -149,30 +154,30 @@ class AnalyticsScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  const Row(
+                  Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text('Mon',
                           style: TextStyle(
-                              color: Color(0xFF64748B), fontSize: 12)),
+                              color: colorScheme.onSurface.withOpacity(0.6), fontSize: 12)),
                       Text('Tue',
                           style: TextStyle(
-                              color: Color(0xFF64748B), fontSize: 12)),
+                              color: colorScheme.onSurface.withOpacity(0.6), fontSize: 12)),
                       Text('Wed',
                           style: TextStyle(
-                              color: Color(0xFF64748B), fontSize: 12)),
+                              color: colorScheme.onSurface.withOpacity(0.6), fontSize: 12)),
                       Text('Thu',
                           style: TextStyle(
-                              color: Color(0xFF64748B), fontSize: 12)),
+                              color: colorScheme.onSurface.withOpacity(0.6), fontSize: 12)),
                       Text('Fri',
                           style: TextStyle(
-                              color: Color(0xFF64748B), fontSize: 12)),
+                              color: colorScheme.onSurface.withOpacity(0.6), fontSize: 12)),
                       Text('Sat',
                           style: TextStyle(
-                              color: Color(0xFF64748B), fontSize: 12)),
+                              color: colorScheme.onSurface.withOpacity(0.6), fontSize: 12)),
                       Text('Sun',
                           style: TextStyle(
-                              color: Color(0xFF64748B), fontSize: 12)),
+                              color: colorScheme.onSurface.withOpacity(0.6), fontSize: 12)),
                     ],
                   ),
                 ],
@@ -184,20 +189,23 @@ class AnalyticsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildOverviewCard({
+  Widget _buildOverviewCard(
+    BuildContext context, {
     required String title,
     required String value,
     required String change,
     required bool isPositive,
   }) {
+    final colorScheme = Theme.of(context).colorScheme;
+    
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFF1C2439),
+        color: colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: const Color(0xFF2D3548),
+          color: colorScheme.onSurface.withOpacity(0.1),
           width: 1,
         ),
       ),
@@ -206,8 +214,8 @@ class AnalyticsScreen extends StatelessWidget {
         children: [
           Text(
             title,
-            style: const TextStyle(
-              color: Color(0xFF64748B),
+            style: TextStyle(
+              color: colorScheme.onSurface.withOpacity(0.6),
               fontSize: 14,
             ),
           ),
@@ -216,8 +224,8 @@ class AnalyticsScreen extends StatelessWidget {
             children: [
               Text(
                 value,
-                style: const TextStyle(
-                  color: Colors.white,
+                style: TextStyle(
+                  color: colorScheme.onSurface,
                   fontSize: 24,
                   fontWeight: FontWeight.w600,
                 ),
@@ -235,7 +243,7 @@ class AnalyticsScreen extends StatelessWidget {
                 child: Text(
                   change,
                   style: TextStyle(
-                    color: isPositive ? Colors.green : Colors.red,
+                    color: isPositive ? Colors.green[400] : Colors.red[400],
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
                   ),
