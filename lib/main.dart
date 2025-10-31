@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 // import 'screens/chat_screen.dart';
 import 'screens/messages_screen.dart';
@@ -58,10 +59,27 @@ class _TrustScoreSection extends StatelessWidget {
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  
+  // Lock orientation to portrait for better mobile UX
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
+  
+  // Set system UI overlay style for Android status bar
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.light,
+      systemNavigationBarColor: Colors.transparent,
+      systemNavigationBarIconBrightness: Brightness.light,
+    ),
+  );
+  
   await Supabase.initialize(
     url: 'https://qmugitnuxgzausbeexhs.supabase.co',
     anonKey:
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFtdWdpdG51eGd6YXVzYmVleGhzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE0NzkzMDcsImV4cCI6MjA3NzA1NTMwN30.JbDRJ6rKQM0euPOd1zwvKpBJqCiUF0rXisY_hWbIwiA',
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFtdWdpdG51eHd6YXVzYmVleGhzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE0NzkzMDcsImV4cCI6MjA3NzA1NTMwN30.JbDRJ6rKQM0euPOd1zwvKpBJqCiUF0rXisY_hWbIwiA',
   );
 
   await Firebase.initializeApp(

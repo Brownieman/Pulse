@@ -7,6 +7,8 @@ import 'screens/settings_screen.dart';
 import 'screens/task_list_screen.dart';
 import 'controllers/home_controller.dart';
 import 'controllers/auth_controller.dart';
+import 'routes/app_routes.dart';
+import 'theme/app_theme.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -52,6 +54,8 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     print('HomeScreen build: currentIndex = $_currentIndex'); // DEBUG
     return Scaffold(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      appBar: _buildAppBar(),
       body: _buildBody(),
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Theme.of(context).cardColor,
@@ -74,6 +78,54 @@ class _HomeScreenState extends State<HomeScreen> {
           BottomNavigationBarItem(
               icon: Icon(Icons.settings), label: 'Settings'),
         ],
+      ),
+      floatingActionButton: _currentIndex == 0 ? _buildFloatingActionButton() : null,
+    );
+  }
+
+  AppBar? _buildAppBar() {
+    switch (_currentIndex) {
+      case 0:
+        return AppBar(
+          title: const Text("Messages"),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.person_add_alt_1_outlined),
+              tooltip: 'Friends',
+              onPressed: () {
+                Get.toNamed(AppRoutes.friends);
+              },
+            ),
+          ],
+        );
+      default:
+        return null;
+    }
+  }
+
+  Widget _buildFloatingActionButton() {
+    return Container(
+      decoration: BoxDecoration(
+        boxShadow: [
+          BoxShadow(
+            color: AppTheme.primaryColor.withOpacity(0.3),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: FloatingActionButton.extended(
+        onPressed: () {
+          Get.toNamed(AppRoutes.friends);
+        },
+        backgroundColor: AppTheme.primaryColor,
+        foregroundColor: Colors.white,
+        elevation: 0,
+        icon: const Icon(Icons.chat_rounded, size: 20),
+        label: const Text(
+          'New Chat',
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+        ),
       ),
     );
   }

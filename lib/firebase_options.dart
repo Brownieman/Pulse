@@ -24,15 +24,6 @@ class DefaultFirebaseOptions {
         return android;
       case TargetPlatform.iOS:
         return ios;
-      case TargetPlatform.macOS:
-        return macos;
-      case TargetPlatform.windows:
-        return windows;
-      case TargetPlatform.linux:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for linux - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
       default:
         throw UnsupportedError(
           'DefaultFirebaseOptions are not supported for this platform.',
@@ -65,24 +56,5 @@ class DefaultFirebaseOptions {
     projectId: 'pulse-8033f',
     storageBucket: 'pulse-8033f.firebasestorage.app',
     iosBundleId: 'com.example.pulseMain',
-  );
-
-  static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyBoOzGdcXsEJXEH666SVgD-kKv7kyK8gF8',
-    appId: '1:808979465867:ios:55e6caef184198ca91b68e',
-    messagingSenderId: '808979465867',
-    projectId: 'pulse-8033f',
-    storageBucket: 'pulse-8033f.firebasestorage.app',
-    iosBundleId: 'com.example.pulseMain',
-  );
-
-  static const FirebaseOptions windows = FirebaseOptions(
-    apiKey: 'AIzaSyCdkY-iG0_q13GARyozmcPPfbcsDSIKmgI',
-    appId: '1:808979465867:web:a0b1faa7527f5fb991b68e',
-    messagingSenderId: '808979465867',
-    projectId: 'pulse-8033f',
-    authDomain: 'pulse-8033f.firebaseapp.com',
-    storageBucket: 'pulse-8033f.firebasestorage.app',
-    measurementId: 'G-GBQCB6ZPHT',
   );
 }

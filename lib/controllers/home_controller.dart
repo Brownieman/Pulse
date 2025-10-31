@@ -108,6 +108,15 @@ class HomeController extends GetxController {
   void onInit() {
     super.onInit();
     _setupAuthStateMonitoring();
+
+    // Update GetBuilder when Rx variables change
+    ever(_allChats, (_) => update());
+    ever(_filteredChats, (_) => update());
+    ever(_users, (_) => update());
+    ever(_notifications, (_) => update());
+    ever(_isSearching, (_) => update());
+    ever(_searchQuery, (_) => update());
+    ever(_activeFilter, (_) => update());
   }
 
   @override
