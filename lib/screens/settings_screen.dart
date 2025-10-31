@@ -51,10 +51,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
               letterSpacing: 0.2,
             ),
           ),
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back_ios_new, color: Theme.of(context).colorScheme.onBackground),
-            onPressed: () => Navigator.of(context).pop(),
-          ),
         ),
         body: ListView(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),

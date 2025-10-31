@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:collection/collection.dart';
 import 'package:talkzy_beta1/controllers/auth_controller.dart';
 import 'package:talkzy_beta1/controllers/friend_requests_controller.dart';
 import 'package:talkzy_beta1/models/friendship_model.dart';

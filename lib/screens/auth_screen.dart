@@ -167,274 +167,291 @@ class _AuthScreenState extends State<AuthScreen> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final screenSize = MediaQuery.of(context).size;
+    final screenWidth = screenSize.width;
+    final screenHeight = screenSize.height;
+    
+    // Responsive sizing based on screen dimensions
+    final logoSize = screenWidth > 400 ? 80.0 : 64.0;
+    final headlineSize = screenWidth > 400 ? 32.0 : 26.0;
+    final horizontalPadding = screenWidth > 600 ? 32.0 : 16.0;
+    final topSpacing = screenHeight > 800 ? 40.0 : 20.0;
     
     return Scaffold(
       backgroundColor: colorScheme.background,
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const SizedBox(height: 40),
-              // Logo
-              const Icon(
-                Icons.notifications_active, // pulse_alert equivalent
-                color: Colors.white,
-                size: 80,
-              ),
-              const SizedBox(height: 16),
-              // Headline
-              const Text(
-                'Welcome to Pulse',
-                style: TextStyle(
+          padding: EdgeInsets.symmetric(
+            horizontal: horizontalPadding,
+            vertical: 16,
+          ),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              minHeight: screenHeight - MediaQuery.of(context).padding.vertical - 32,
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(height: topSpacing),
+                // Logo - Responsive size
+                Icon(
+                  Icons.notifications_active,
                   color: Colors.white,
-                  fontSize: 32,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'Space Grotesk',
+                  size: logoSize,
                 ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 32),
-              // Segmented Buttons
-              Container(
-                height: 48,
-                decoration: BoxDecoration(
-                  color: colorScheme.surface,
-                  borderRadius: BorderRadius.circular(12),
+                const SizedBox(height: 16),
+                // Headline - Responsive size
+                Text(
+                  'Welcome to Pulse',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: headlineSize,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'Space Grotesk',
+                  ),
+                  textAlign: TextAlign.center,
                 ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: () => setState(() => isLogin = true),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            gradient: isLogin
-                                ? LinearGradient(
-                                    colors: [
-                                      colorScheme.primary,
-                                      colorScheme.primary.withOpacity(0.8)
-                                    ],
-                                  )
-                                : null,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Center(
-                            child: Text(
-                              'Log In',
-                              style: TextStyle(
-                                color: isLogin
-                                    ? Colors.white
-                                    : colorScheme.onSurface.withOpacity(0.7),
-                                fontWeight: FontWeight.w500,
+                  const SizedBox(height: 32),
+                // Segmented Buttons
+                Container(
+                  height: 48,
+                  decoration: BoxDecoration(
+                    color: colorScheme.surface,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () => setState(() => isLogin = true),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              gradient: isLogin
+                                  ? LinearGradient(
+                                      colors: [
+                                        colorScheme.primary,
+                                        colorScheme.primary.withOpacity(0.8)
+                                      ],
+                                    )
+                                  : null,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Center(
+                              child: Text(
+                                'Log In',
+                                style: TextStyle(
+                                  color: isLogin
+                                      ? Colors.white
+                                      : colorScheme.onSurface.withOpacity(0.7),
+                                  fontWeight: FontWeight.w500,
+                                ),
                               ),
                             ),
                           ),
                         ),
                       ),
-                    ),
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: () => setState(() => isLogin = false),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            gradient: !isLogin
-                                ? LinearGradient(
-                                    colors: [
-                                      colorScheme.primary,
-                                      colorScheme.primary.withOpacity(0.8)
-                                    ],
-                                  )
-                                : null,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Center(
-                            child: Text(
-                              'Sign Up',
-                              style: TextStyle(
-                                color: !isLogin
-                                    ? Colors.white
-                                    : colorScheme.onSurface.withOpacity(0.7),
-                                fontWeight: FontWeight.w500,
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () => setState(() => isLogin = false),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              gradient: !isLogin
+                                  ? LinearGradient(
+                                      colors: [
+                                        colorScheme.primary,
+                                        colorScheme.primary.withOpacity(0.8)
+                                      ],
+                                    )
+                                  : null,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Center(
+                              child: Text(
+                                'Sign Up',
+                                style: TextStyle(
+                                  color: !isLogin
+                                      ? Colors.white
+                                      : colorScheme.onSurface.withOpacity(0.7),
+                                  fontWeight: FontWeight.w500,
+                                ),
                               ),
                             ),
                           ),
                         ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16),
+                // Helpful hint
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Text(
+                    isLogin 
+                        ? 'Log in with your existing account' 
+                        : 'Create a new account to get started',
+                    style: TextStyle(
+                      color: colorScheme.onBackground.withOpacity(0.7),
+                      fontSize: 14,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                // Email Field
+                TextFormField(
+                  controller: _emailController,
+                  keyboardType: TextInputType.emailAddress,
+                  style: TextStyle(color: colorScheme.onSurface),
+                  decoration: InputDecoration(
+                    labelText: 'Email',
+                    labelStyle: TextStyle(color: colorScheme.onSurface.withOpacity(0.7)),
+                    filled: true,
+                    fillColor: colorScheme.surface,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide.none,
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide:
+                          BorderSide(color: colorScheme.primary, width: 2),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                // Password Field
+                TextFormField(
+                  controller: _passwordController,
+                  obscureText: _obscurePassword,
+                  style: TextStyle(color: colorScheme.onSurface),
+                  decoration: InputDecoration(
+                    labelText: 'Password',
+                    labelStyle: TextStyle(color: colorScheme.onSurface.withOpacity(0.7)),
+                    filled: true,
+                    fillColor: colorScheme.surface,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide.none,
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide:
+                          BorderSide(color: colorScheme.primary, width: 2),
+                    ),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _obscurePassword
+                            ? Icons.visibility_off
+                            : Icons.visibility,
+                        color: Colors.grey,
+                      ),
+                      onPressed: () =>
+                          setState(() => _obscurePassword = !_obscurePassword),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                // Forgot Password
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton(
+                    onPressed: () {
+                      // TODO: Implement forgot password
+                    },
+                    child: const Text(
+                      'Forgot Password?',
+                      style: TextStyle(
+                          color: Colors.white,
+                          decoration: TextDecoration.underline),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 24),
+                // Primary Button
+                SizedBox(
+                  width: double.infinity,
+                  height: 56,
+                  child: ElevatedButton(
+                    onPressed: _isLoading ? null : _authenticate,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.transparent,
+                      shadowColor: Colors.transparent,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: Ink(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [colorScheme.primary, colorScheme.primary.withOpacity(0.8)],
+                        ),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Container(
+                        alignment: Alignment.center,
+                        child: _isLoading
+                            ? const CircularProgressIndicator(color: Colors.white)
+                            : Text(
+                                isLogin ? 'Log In' : 'Sign Up',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 24),
+                // Divider
+                Row(
+                  children: [
+                    Expanded(child: Divider(color: colorScheme.onSurface.withOpacity(0.2))),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Text(
+                        'Or continue with',
+                        style: TextStyle(color: colorScheme.onSurface.withOpacity(0.5), fontSize: 14),
+                      ),
+                    ),
+                    Expanded(child: Divider(color: colorScheme.onSurface.withOpacity(0.2))),
+                  ],
+                ),
+                const SizedBox(height: 24),
+                // Social Buttons
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    _socialButton(
+                      onPressed: _signInWithGoogle,
+                      child: Image.network(
+                        'https://lh3.googleusercontent.com/aida-public/AB6AXuALXyssQaztu3RCUu2r_0mWbIOC0nXXhozpcOYLBa1OaBcE9Y7eespQ3e6a1OBJz--xU0gSSceXmICc-hA6nyqOLN_dGeI41Adp03Xs398VFJNYzcpAFo9NspzhUGVMaDQ1G8ArumlbqF1LoUCyGQhdIw4v2zQlY6oYNARqyBYJi25FxNBfYbm0LcXUYQEYkqmBVKOtHVDR2jyx3n-aRmvjHvqonrVaM_AQv_Icr1f1g6umW58pjl23bvfiZaADrJIT_eVZ2drXgWI',
+                        height: 24,
+                        width: 24,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    _socialButton(
+                      onPressed: _signInWithApple,
+                      child: Image.network(
+                        'https://lh3.googleusercontent.com/aida-public/AB6AXuB6HFCY_QcVzzXslF1Jz_QqiGDqK9xDe4_UQ8NgkKlspzjzJR0Iirv6AZK9BKDiXiOhBDXQTFU6L_7VoYoIIxNVTihEQLqdCk6X-puTz3JA9V161ZMu1m7kCHTR2k-GrxSGSUnt_EO-6fQ09dgk4KGws7i3VU_rgnnAXvC9HxG0PSFoHIVGmttnGRbJe6oD5rCyESbie9M5vpzUy73d9c7WgzucqK-MSGoWhnOpG4eSS92GIja_5NpCmkjj63QqmI9t5QeMosmtO-Q',
+                        height: 24,
+                        width: 24,
                       ),
                     ),
                   ],
                 ),
-              ),
-              const SizedBox(height: 16),
-              // Helpful hint
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                child: Text(
-                  isLogin 
-                      ? 'Log in with your existing account' 
-                      : 'Create a new account to get started',
-                  style: TextStyle(
-                    color: colorScheme.onBackground.withOpacity(0.7),
-                    fontSize: 14,
-                  ),
+                const SizedBox(height: 24),
+                // Footer
+                Text(
+                  'By signing up, you agree to our Terms of Service.',
+                  style: TextStyle(color: Colors.grey[500], fontSize: 12),
                   textAlign: TextAlign.center,
                 ),
-              ),
-              const SizedBox(height: 16),
-              // Email Field
-              TextFormField(
-                controller: _emailController,
-                keyboardType: TextInputType.emailAddress,
-                style: TextStyle(color: colorScheme.onSurface),
-                decoration: InputDecoration(
-                  labelText: 'Email',
-                  labelStyle: TextStyle(color: colorScheme.onSurface.withOpacity(0.7)),
-                  filled: true,
-                  fillColor: colorScheme.surface,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide.none,
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide:
-                        BorderSide(color: colorScheme.primary, width: 2),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-              // Password Field
-              TextFormField(
-                controller: _passwordController,
-                obscureText: _obscurePassword,
-                style: TextStyle(color: colorScheme.onSurface),
-                decoration: InputDecoration(
-                  labelText: 'Password',
-                  labelStyle: TextStyle(color: colorScheme.onSurface.withOpacity(0.7)),
-                  filled: true,
-                  fillColor: colorScheme.surface,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide.none,
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide:
-                        BorderSide(color: colorScheme.primary, width: 2),
-                  ),
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      _obscurePassword
-                          ? Icons.visibility_off
-                          : Icons.visibility,
-                      color: Colors.grey,
-                    ),
-                    onPressed: () =>
-                        setState(() => _obscurePassword = !_obscurePassword),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 8),
-              // Forgot Password
-              Align(
-                alignment: Alignment.centerRight,
-                child: TextButton(
-                  onPressed: () {
-                    // TODO: Implement forgot password
-                  },
-                  child: const Text(
-                    'Forgot Password?',
-                    style: TextStyle(
-                        color: Colors.white,
-                        decoration: TextDecoration.underline),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 24),
-              // Primary Button
-              SizedBox(
-                width: double.infinity,
-                height: 56,
-                child: ElevatedButton(
-                  onPressed: _isLoading ? null : _authenticate,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.transparent,
-                    shadowColor: Colors.transparent,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  child: Ink(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [colorScheme.primary, colorScheme.primary.withOpacity(0.8)],
-                      ),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Container(
-                      alignment: Alignment.center,
-                      child: _isLoading
-                          ? const CircularProgressIndicator(color: Colors.white)
-                          : Text(
-                              isLogin ? 'Log In' : 'Sign Up',
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 24),
-              // Divider
-              Row(
-                children: [
-                  Expanded(child: Divider(color: colorScheme.onSurface.withOpacity(0.2))),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Text(
-                      'Or continue with',
-                      style: TextStyle(color: colorScheme.onSurface.withOpacity(0.5), fontSize: 14),
-                    ),
-                  ),
-                  Expanded(child: Divider(color: colorScheme.onSurface.withOpacity(0.2))),
-                ],
-              ),
-              const SizedBox(height: 24),
-              // Social Buttons
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  _socialButton(
-                    onPressed: _signInWithGoogle,
-                    child: Image.network(
-                      'https://lh3.googleusercontent.com/aida-public/AB6AXuALXyssQaztu3RCUu2r_0mWbIOC0nXXhozpcOYLBa1OaBcE9Y7eespQ3e6a1OBJz--xU0gSSceXmICc-hA6nyqOLN_dGeI41Adp03Xs398VFJNYzcpAFo9NspzhUGVMaDQ1G8ArumlbqF1LoUCyGQhdIw4v2zQlY6oYNARqyBYJi25FxNBfYbm0LcXUYQEYkqmBVKOtHVDR2jyx3n-aRmvjHvqonrVaM_AQv_Icr1f1g6umW58pjl23bvfiZaADrJIT_eVZ2drXgWI',
-                      height: 24,
-                      width: 24,
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  _socialButton(
-                    onPressed: _signInWithApple,
-                    child: Image.network(
-                      'https://lh3.googleusercontent.com/aida-public/AB6AXuB6HFCY_QcVzzXslF1Jz_QqiGDqK9xDe4_UQ8NgkKlspzjzJR0Iirv6AZK9BKDiXiOhBDXQTFU6L_7VoYoIIxNVTihEQLqdCk6X-puTz3JA9V161ZMu1m7kCHTR2k-GrxSGSUnt_EO-6fQ09dgk4KGws7i3VU_rgnnAXvC9HxG0PSFoHIVGmttnGRbJe6oD5rCyESbie9M5vpzUy73d9c7WgzucqK-MSGoWhnOpG4eSS92GIja_5NpCmkjj63QqmI9t5QeMosmtO-Q',
-                      height: 24,
-                      width: 24,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 24),
-              // Footer
-              Text(
-                'By signing up, you agree to our Terms of Service.',
-                style: TextStyle(color: Colors.grey[500], fontSize: 12),
-                textAlign: TextAlign.center,
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

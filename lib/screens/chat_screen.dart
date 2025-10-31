@@ -83,17 +83,22 @@ class _ChatScreenState extends State<ChatScreen> {
           Expanded(
             child: ListView.builder(
               controller: _scrollController,
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               itemCount: messages.length,
               itemBuilder: (context, index) {
                 final message = messages[index];
                 final isMe = message.senderId == 'me';
+                final screenWidth = MediaQuery.of(context).size.width;
+                
                 return Align(
                   alignment:
                       isMe ? Alignment.centerRight : Alignment.centerLeft,
                   child: Container(
+                    constraints: BoxConstraints(
+                      maxWidth: screenWidth * 0.75,
+                    ),
                     margin: const EdgeInsets.symmetric(vertical: 4),
-                    padding: const EdgeInsets.all(12),
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                     decoration: BoxDecoration(
                       color: isMe
                           ? Theme.of(context).colorScheme.primary
@@ -106,14 +111,21 @@ class _ChatScreenState extends State<ChatScreen> {
                         color: isMe ? Colors.white : Theme.of(context).colorScheme.onBackground,
                         fontSize: 16,
                       ),
+                      softWrap: true,
                     ),
                   ),
                 );
               },
             ),
           ),
+          // Message input area with keyboard awareness
           Container(
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.fromLTRB(
+              16,
+              12,
+              16,
+              12 + MediaQuery.of(context).viewInsets.bottom,
+            ),
             color: Theme.of(context).cardColor,
             child: Row(
               children: [
@@ -121,25 +133,50 @@ class _ChatScreenState extends State<ChatScreen> {
                   child: TextField(
                     controller: _messageController,
                     style: TextStyle(color: Theme.of(context).colorScheme.onBackground),
+                    maxLines: null,
+                    minLines: 1,
                     decoration: InputDecoration(
                       hintText: 'Type a message...',
-                      hintStyle: TextStyle(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5)),
+                      hintStyle: TextStyle(
+                        color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+                      ),
                       filled: true,
                       fillColor: Theme.of(context).scaffoldBackgroundColor,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(20),
                         borderSide: BorderSide.none,
                       ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(20),
+                        borderSide: BorderSide(
+                          color: Theme.of(context).colorScheme.primary,
+                          width: 1.5,
+                        ),
+                      ),
                       contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 12),
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
+                      isDense: false,
                     ),
                     onSubmitted: (_) => _sendMessage(),
                   ),
                 ),
                 const SizedBox(width: 8),
-                IconButton(
-                  icon: Icon(Icons.send, color: Theme.of(context).colorScheme.primary),
-                  onPressed: _sendMessage,
+                Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    onTap: _sendMessage,
+                    borderRadius: BorderRadius.circular(20),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Icon(
+                        Icons.send,
+                        color: Theme.of(context).colorScheme.primary,
+                        size: 24,
+                      ),
+                    ),
+                  ),
                 ),
               ],
             ),

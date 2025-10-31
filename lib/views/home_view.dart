@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:talkzy_beta1/controllers/auth_controller.dart';
 import 'package:talkzy_beta1/controllers/home_controller.dart';
 import 'package:talkzy_beta1/routes/app_routes.dart';
 import 'package:talkzy_beta1/theme/app_theme.dart';
@@ -13,64 +12,44 @@ class HomeView extends GetView<HomeController> {
 
   @override
   Widget build(BuildContext context) {
-    final AuthController authController = Get.find<AuthController>();
-
-    return Scaffold(
-      backgroundColor: ThemeHelper.backgroundColor(context),
-      //appBar: _buildAppBar(context, authController),
-      appBar: AppBar(
-        title: const Text("Messages"),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.person_add_alt_1_outlined),
-            tooltip: 'Find Friends',
-            onPressed: () {
-              Get.toNamed(AppRoutes.findPeople);
-            },
-          ),
-        ],
-      ),
-      body: Column(
-        children: [
-          _buildSearchBar(),
-          Expanded(
-            child: RefreshIndicator(
-              onRefresh: controller.refreshChats,
-              color: AppTheme.primaryColor,
-              child: Obx(() {
-                if (controller.isSearching &&
-                    controller.searchQuery.isNotEmpty) {
-                  final hasResults = controller.filteredChats.isNotEmpty;
-                  return hasResults
-                      ? _buildSearchChatsList()
-                      : _buildNoSearchResults();
-                }
-
-                final hasAnyData = controller.activeUsers.isNotEmpty ||
-                    controller.chats.isNotEmpty ||
-                    controller.remainingFriends.isNotEmpty;
-
-                if (!hasAnyData) return _buildEmptyState();
-
-                return _buildMainContent();
-              }),
-            ),
-          )
-        ],
-      ),
-      floatingActionButton: _buildFloatingActionButton(),
+    return GetBuilder<HomeController>(
+      builder: (controller) {
+        return Column(
+          children: [
+            _buildSearchBar(controller),
+            Expanded(
+              child: _buildBody(controller),
+            )
+          ],
+        );
+      },
     );
   }
 
-  Widget _buildSearchBar() {
+  Widget _buildBody(HomeController controller) {
+    if (controller.isSearching && controller.searchQuery.isNotEmpty) {
+      final hasResults = controller.filteredChats.isNotEmpty;
+      return hasResults
+          ? _buildSearchChatsList(controller)
+          : _buildNoSearchResults();
+    }
+
+    final hasAnyData = controller.activeUsers.isNotEmpty ||
+        controller.chats.isNotEmpty ||
+        controller.remainingFriends.isNotEmpty;
+
+    if (!hasAnyData) return _buildEmptyState();
+
+    return _buildMainContent(controller);
+  }
+
+  Widget _buildSearchBar(HomeController controller) {
     return Container(
       color: ThemeHelper.backgroundColor(Get.context!),
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
-      child: Container(
-        decoration: BoxDecoration(
-          color: ThemeHelper.cardColor(Get.context!),
-          borderRadius: BorderRadius.circular(12),
-        ),
+      child: Material(
+        color: ThemeHelper.cardColor(Get.context!),
+        borderRadius: BorderRadius.circular(12),
         child: TextField(
           onChanged: controller.onSearchChanged,
           decoration: InputDecoration(
@@ -86,7 +65,7 @@ class HomeView extends GetView<HomeController> {
                   ThemeHelper.textSecondaryColor(Get.context!).withOpacity(0.8),
               size: 20,
             ),
-            suffixIcon: Obx(() => controller.searchQuery.isNotEmpty
+            suffixIcon: controller.searchQuery.isNotEmpty
                 ? IconButton(
                     onPressed: controller.clearSearch,
                     icon: Icon(
@@ -95,7 +74,7 @@ class HomeView extends GetView<HomeController> {
                           .withOpacity(0.8),
                       size: 18,
                     ))
-                : const SizedBox.shrink()),
+                : const SizedBox.shrink(),
             border: InputBorder.none,
             contentPadding:
                 const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
@@ -105,337 +84,188 @@ class HomeView extends GetView<HomeController> {
     );
   }
 
-  Widget _buildMainContent() {
-    return Container(
-      decoration: BoxDecoration(
-        color: ThemeHelper.backgroundColor(Get.context!),
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(24),
-          topRight: Radius.circular(24),
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildActiveFriendsSection(),
-          _buildRecentChatsHeader(),
-          Expanded(child: _buildRecentChatsList()),
-        ],
-      ),
+  Widget _buildMainContent(HomeController controller) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildActiveFriendsSection(controller),
+        _buildRecentChatsHeader(),
+        Expanded(child: _buildRecentChatsList(controller)),
+      ],
     );
   }
 
-  Widget _buildActiveFriendsSection() {
-    return Obx(() {
-      final hasActive = controller.activeUsers.isNotEmpty;
-      final hasFriends = controller.remainingFriends.isNotEmpty;
+  Widget _buildActiveFriendsSection(HomeController controller) {
+    final hasActive = controller.activeUsers.isNotEmpty;
+    final hasFriends = controller.remainingFriends.isNotEmpty;
 
-      if (!hasActive && !hasFriends) return const SizedBox.shrink();
+    if (!hasActive && !hasFriends) return const SizedBox.shrink();
 
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Headers
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
+    // Responsive sizing
+    final screenWidth = Get.width;
+    final friendSectionHeight = screenWidth > 400 ? 120.0 : 100.0;
+    final avatarRadius = screenWidth > 400 ? 32.0 : 28.0;
+    final nameFontSize = screenWidth > 400 ? 12.0 : 11.0;
+    final spacing = screenWidth > 400 ? 8.0 : 6.0;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: EdgeInsets.fromLTRB(16, 16, 16, 12),
+          child: Text(
+            'Active Friends',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w700,
+              color: ThemeHelper.textPrimaryColor(Get.context!),
+            ),
+          ),
+        ),
+        Container(
+          height: friendSectionHeight,
+          padding: EdgeInsets.symmetric(horizontal: spacing),
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            physics: const BouncingScrollPhysics(),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                if (hasActive)
-                  Text(
-                    'Active',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                      color: ThemeHelper.textPrimaryColor(Get.context!),
-                    ),
-                  ),
-                if (hasFriends)
-                  Text(
-                    'Friends',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                      color: ThemeHelper.textPrimaryColor(Get.context!)
-                          .withOpacity(0.85),
-                    ),
-                  ),
-              ],
-            ),
-          ),
-
-          // Horizontal scrollable section
-          Container(
-            height: 120,
-            margin: const EdgeInsets.symmetric(horizontal: 12),
-            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
-            decoration: BoxDecoration(
-              color: ThemeHelper.cardColor(Get.context!),
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(
-                color: ThemeHelper.borderColor(Get.context!),
-                width: 1,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.03),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: ListView(
-              scrollDirection: Axis.horizontal,
-              children: [
-                // Active Users
-                if (hasActive) ...[
-                  ...controller.activeUsers
-                      .map((user) => _buildActiveUserCard(user, true)),
-
-                  // Divider between Active and Friends
-                  if (hasFriends)
-                    Container(
-                      width: 1,
-                      height: 80,
-                      margin: const EdgeInsets.symmetric(horizontal: 16),
-                      color: ThemeHelper.borderColor(Get.context!)
-                          .withOpacity(0.5),
-                    ),
-                ],
-
-                // Friend Users (not online)
-                if (hasFriends)
-                  ...controller.remainingFriends
-                      .map((user) => _buildActiveUserCard(user, false)),
-              ],
-            ),
-          ),
-          const SizedBox(height: 16),
-        ],
-      );
-    });
-  }
-
-  Widget _buildActiveUserCard(dynamic user, bool isOnline) {
-    final AuthController authController = Get.find<AuthController>();
-    final currentUserId = authController.user?.uid ?? '';
-
-    return GestureDetector(
-      onTap: () {
-        final chat = controller.findChatWithUser(user.id);
-        if (chat != null) {
-          controller.openChat(chat);
-        } else {
-          Get.toNamed(AppRoutes.chat, arguments: {
-            'chatId': null,
-            'otherUser': user,
-            'isNewChat': true,
-          });
-        }
-      },
-      child: Container(
-        width: 80,
-        margin: const EdgeInsets.symmetric(horizontal: 6),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Stack(
-              children: [
-                UserAvatar(
-                  user: user,
-                  radius: 30,
-                  showOnlineStatus: false,
-                  viewerId: currentUserId,
-                  isFriend:
-                      true, // Users in Active/Friends section are always friends
-                ),
-                if (isOnline)
-                  Positioned(
-                    right: 0,
-                    bottom: 0,
+                ...controller.activeUsers.map((user) => 
+                  GestureDetector(
+                    onTap: () {
+                      // Handle tap on user avatar
+                    },
                     child: Container(
-                      width: 18,
-                      height: 18,
-                      decoration: BoxDecoration(
-                        color: AppTheme.successColor,
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                            color: ThemeHelper.cardColor(Get.context!),
-                            width: 3),
+                      margin: EdgeInsets.symmetric(horizontal: spacing),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          UserAvatar(
+                            user: user,
+                            radius: avatarRadius,
+                            showOnlineStatus: true,
+                            isFriend: true,
+                          ),
+                          SizedBox(height: spacing * 1.5),
+                          ConstrainedBox(
+                            constraints: BoxConstraints(
+                              maxWidth: avatarRadius * 3.5,
+                            ),
+                            child: Text(
+                              user.displayName.split(' ').first,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: nameFontSize,
+                                fontWeight: FontWeight.w500,
+                                color: ThemeHelper.textPrimaryColor(Get.context!),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                  ),
+                  )),
+                ...controller.remainingFriends.map((user) => 
+                  GestureDetector(
+                    onTap: () {
+                      // Handle tap on user avatar
+                    },
+                    child: Container(
+                      margin: EdgeInsets.symmetric(horizontal: spacing),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          UserAvatar(
+                            user: user,
+                            radius: avatarRadius,
+                            showOnlineStatus: false,
+                            isFriend: true,
+                          ),
+                          SizedBox(height: spacing * 1.5),
+                          ConstrainedBox(
+                            constraints: BoxConstraints(
+                              maxWidth: avatarRadius * 3.5,
+                            ),
+                            child: Text(
+                              user.displayName.split(' ').first,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: nameFontSize,
+                                fontWeight: FontWeight.w500,
+                                color: ThemeHelper.textPrimaryColor(Get.context!),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  )),
               ],
             ),
-            const SizedBox(height: 8),
-            Text(
-              user.displayName.split(' ').first,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
-                color: ThemeHelper.textPrimaryColor(Get.context!),
-              ),
-            ),
-          ],
+          ),
         ),
-      ),
+      ],
     );
   }
 
   Widget _buildRecentChatsHeader() {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Obx(() {
-            String title = 'Recent Chats';
-            switch (controller.activeFilter) {
-              case 'Unread':
-                title = 'Unread Messages';
-                break;
-              case 'Recent':
-                title = 'Recent Messages';
-                break;
-              case 'Active':
-                title = 'Active Conversations';
-                break;
-            }
-            return Text(
-              title,
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-                color: ThemeHelper.textPrimaryColor(Get.context!),
-              ),
-            );
-          }),
-          _buildFilterDropdown(),
-        ],
+      child: Text(
+        'Recent Chats',
+        style: TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.w600,
+          color: ThemeHelper.textPrimaryColor(Get.context!),
+        ),
       ),
     );
   }
 
-  Widget _buildFilterDropdown() {
-    return Obx(() {
-      final currentFilter = controller.activeFilter;
-
-      // Get the count for the current filter
-      int getFilterCount(String filter) {
-        switch (filter) {
-          case 'Unread':
-            return controller.getUnreadCount();
-          case 'Recent':
-            return controller.getRecentCount();
-          case 'Active':
-            return controller.getActiveCount();
-          default:
-            return 0;
-        }
-      }
-
-      String getDisplayText(String filter) {
-        if (filter == 'All') {
-          return 'All';
-        }
-        final count = getFilterCount(filter);
-        return '$filter ($count)';
-      }
-
-      return Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
-        decoration: BoxDecoration(
-          color: AppTheme.primaryColor.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: AppTheme.primaryColor.withOpacity(0.3),
-            width: 1,
-          ),
-        ),
-        child: DropdownButton<String>(
-          value: currentFilter,
-          underline: const SizedBox(),
-          icon: Icon(
-            Icons.keyboard_arrow_down_rounded,
-            color: AppTheme.primaryColor,
-            size: 20,
-          ),
-          style: TextStyle(
-            color: AppTheme.primaryColor,
-            fontSize: 13,
-            fontWeight: FontWeight.w600,
-          ),
-          dropdownColor: ThemeHelper.cardColor(Get.context!),
-          borderRadius: BorderRadius.circular(12),
-          items: [
-            DropdownMenuItem(
-              value: 'All',
-              child: Text(getDisplayText('All')),
-            ),
-            DropdownMenuItem(
-              value: 'Unread',
-              child: Text(getDisplayText('Unread')),
-            ),
-            DropdownMenuItem(
-              value: 'Recent',
-              child: Text(getDisplayText('Recent')),
-            ),
-            DropdownMenuItem(
-              value: 'Active',
-              child: Text(getDisplayText('Active')),
-            ),
-          ],
-          onChanged: (String? newValue) {
-            if (newValue != null) {
-              controller.setFilter(newValue);
-            }
-          },
-        ),
-      );
-    });
-  }
-
-  Widget _buildRecentChatsList() {
-    return Obx(() {
-      if (controller.chats.isEmpty) {
-        return Center(
-          child: Padding(
-            padding: const EdgeInsets.all(32),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.chat_bubble_outline,
-                  size: 64,
+  Widget _buildRecentChatsList(HomeController controller) {
+    if (controller.chats.isEmpty) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(32),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.chat_bubble_outline,
+                size: 64,
+                color: ThemeHelper.textSecondaryColor(Get.context!),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'No conversations yet',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  color: ThemeHelper.textPrimaryColor(Get.context!),
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Start chatting with your friends',
+                style: TextStyle(
+                  fontSize: 14,
                   color: ThemeHelper.textSecondaryColor(Get.context!),
                 ),
-                const SizedBox(height: 16),
-                Text(
-                  'No conversations yet',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                    color: ThemeHelper.textPrimaryColor(Get.context!),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Start chatting with your friends',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: ThemeHelper.textSecondaryColor(Get.context!),
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
-        );
-      }
+        ),
+      );
+    }
 
-      return ListView.separated(
+    return RefreshIndicator(
+      onRefresh: controller.refreshChats,
+      color: AppTheme.primaryColor,
+      child: ListView.separated(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         itemCount: controller.chats.length,
         separatorBuilder: (context, index) => Divider(
@@ -457,209 +287,118 @@ class HomeView extends GetView<HomeController> {
             onTap: () => controller.openChat(chat),
           );
         },
-      );
-    });
-  }
-
-  Widget _buildSearchChatsList() {
-    return Container(
-      decoration: BoxDecoration(
-        color: ThemeHelper.cardColor(Get.context!),
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(24),
-          topRight: Radius.circular(24),
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildSearchResultsHeader(),
-          Expanded(
-            child: ListView.separated(
-              padding: const EdgeInsets.all(16),
-              itemCount: controller.filteredChats.length,
-              separatorBuilder: (context, index) => Divider(
-                  height: 1,
-                  color: ThemeHelper.borderColor(Get.context!).withOpacity(0.4),
-                  indent: 72),
-              itemBuilder: (context, index) {
-                final chat = controller.filteredChats[index];
-                final otherUser = controller.getOtherUser(chat);
-
-                if (otherUser == null) return const SizedBox.shrink();
-
-                return ChatListItem(
-                  chat: chat,
-                  otherUser: otherUser,
-                  lastMessageTime:
-                      controller.formatLastMessageTime(chat.lastMessageTime),
-                  onTap: () => controller.openChat(chat),
-                );
-              },
-            ),
-          ),
-        ],
       ),
     );
   }
 
-  Widget _buildSearchResultsHeader() {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
-      child: Row(
-        children: [
-          Obx(() => Text(
-                'Found ${controller.filteredChats.length} result${controller.filteredChats.length == 1 ? '' : 's'}',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: ThemeHelper.textSecondaryColor(Get.context!),
-                ),
-              )),
-          const Spacer(),
-          TextButton(
-            onPressed: controller.clearSearch,
-            child: Text(
-              'Clear',
-              style: TextStyle(
-                color: AppTheme.primaryColor,
-                fontWeight: FontWeight.w500,
-              ),
+  Widget _buildSearchChatsList(HomeController controller) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(16),
+          child: Text(
+            'Search Results',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+              color: ThemeHelper.textPrimaryColor(Get.context!),
             ),
-          )
-        ],
-      ),
+          ),
+        ),
+        Expanded(
+          child: ListView.separated(
+            padding: const EdgeInsets.all(16),
+            itemCount: controller.filteredChats.length,
+            separatorBuilder: (context, index) => Divider(
+                height: 1,
+                color: ThemeHelper.borderColor(Get.context!).withOpacity(0.4),
+                indent: 72),
+            itemBuilder: (context, index) {
+              final chat = controller.filteredChats[index];
+              final otherUser = controller.getOtherUser(chat);
+
+              if (otherUser == null) return const SizedBox.shrink();
+
+              return ChatListItem(
+                chat: chat,
+                otherUser: otherUser,
+                lastMessageTime:
+                    controller.formatLastMessageTime(chat.lastMessageTime),
+                onTap: () => controller.openChat(chat),
+              );
+            },
+          ),
+        ),
+      ],
     );
   }
 
   Widget _buildNoSearchResults() {
-    return Container(
-      decoration: BoxDecoration(
-        color: ThemeHelper.backgroundColor(Get.context!),
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(24),
-          topRight: Radius.circular(24),
-        ),
-      ),
-      child: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(32),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.search_off_rounded,
-                size: 64,
-                color: ThemeHelper.textSecondaryColor(Get.context!),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                'No conversations found',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                  color: ThemeHelper.textPrimaryColor(Get.context!),
-                ),
-              ),
-              const SizedBox(height: 8),
-              Obx(() => Text(
-                    'No results for "${controller.searchQuery}"',
-                    style: TextStyle(
-                        color: ThemeHelper.textSecondaryColor(Get.context!)),
-                    textAlign: TextAlign.center,
-                  )),
-            ],
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.search_off,
+            size: 64,
+            color: ThemeHelper.textSecondaryColor(Get.context!),
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildFloatingActionButton() {
-    return Container(
-      decoration: BoxDecoration(
-        boxShadow: [
-          BoxShadow(
-            color: AppTheme.primaryColor.withOpacity(0.3),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
+          const SizedBox(height: 16),
+          Text(
+            'No conversations found',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+              color: ThemeHelper.textPrimaryColor(Get.context!),
+            ),
           ),
         ],
-      ),
-      child: FloatingActionButton.extended(
-        onPressed: () {
-          Get.toNamed(AppRoutes.friends);
-        },
-        backgroundColor: AppTheme.primaryColor,
-        foregroundColor: Colors.white,
-        elevation: 0,
-        icon: const Icon(Icons.chat_rounded, size: 20),
-        label: const Text(
-          'New Chat',
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-        ),
       ),
     );
   }
 
   Widget _buildEmptyState() {
-    return SingleChildScrollView(
-      physics: const AlwaysScrollableScrollPhysics(),
-      child: Container(
-        height: MediaQuery.of(Get.context!).size.height * 0.6,
-        decoration: BoxDecoration(
-          color: ThemeHelper.cardColor(Get.context!),
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(24),
-            topRight: Radius.circular(24),
-          ),
-        ),
-        child: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(32),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  width: 140,
-                  height: 140,
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        AppTheme.primaryColor.withOpacity(0.1),
-                        AppTheme.primaryColor.withOpacity(0.05),
-                      ],
-                    ),
-                    borderRadius: BorderRadius.circular(70),
-                  ),
-                  child: Icon(
-                    Icons.chat_bubble_outline_rounded,
-                    size: 64,
-                    color: AppTheme.primaryColor,
-                  ),
-                ),
-                const SizedBox(height: 24),
-                const Text(
-                  'No conversations yet',
-                  style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.w700,
-                    color: AppTheme.textPrimaryColor,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Connect with friends and start meaningful conversations',
-                  style: TextStyle(
-                    fontSize: 15,
-                    color: AppTheme.textSecoundaryColor,
-                    height: 1.4,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 24),
-              ],
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(32),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.chat_outlined,
+              size: 80,
+              color: ThemeHelper.textSecondaryColor(Get.context!),
             ),
-          ),
+            const SizedBox(height: 24),
+            Text(
+              'No Friends Yet',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.w700,
+                color: ThemeHelper.textPrimaryColor(Get.context!),
+              ),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'Add friends to start messaging',
+              style: TextStyle(
+                fontSize: 14,
+                color: ThemeHelper.textSecondaryColor(Get.context!),
+              ),
+            ),
+            const SizedBox(height: 24),
+            ElevatedButton.icon(
+              onPressed: () => Get.toNamed(AppRoutes.friends),
+              icon: const Icon(Icons.person_add),
+              label: const Text('Find Friends'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppTheme.primaryColor,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+              ),
+            ),
+          ],
         ),
       ),
     );
