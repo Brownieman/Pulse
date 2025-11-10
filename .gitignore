@@ -43,3 +43,39 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# iOS/macOS build artifacts
+**/ios/Flutter/.last_build_id
+**/ios/Flutter/Flutter-Debug.xcconfig
+**/ios/Flutter/Flutter-Release.xcconfig
+**/ios/Flutter/GeneratedPluginRegistrant.swift
+**/macos/Flutter/
+**/macos/Runner.xcodeproj/
+**/macos/Runner.xcworkspace/
+**/macos/Pods/
+
+# Windows build artifacts
+windows/flutter/ephemeral/
+windows/runner/
+
+# Web build artifacts
+web/
+
+# Linux build artifacts
+linux/
+
+# All ephemeral and generated files
+**/ephemeral/
+**/.dart_tool/
+**/.dart_tool/**
+**/build/
+**/dist/
+
+# Large binary files (build artifacts)
+*.dll
+*.dll.pdb
+*.exe
+*.so
+*.dylib
+*.a
+
